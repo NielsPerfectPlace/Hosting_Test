@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>ArcGIS Login and WebMap Filter Example</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.22/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.22/"></script>
+    <script>
+      require([
+        "esri/config",
+        "esri/WebMap",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/identity/OAuthInfo",
+        "esri/identity/IdentityManager"
+      ], function (
+        esriConfig,
+        WebMap,
+        MapView,
+        FeatureLayer,
+        OAuthInfo,
+        esriId
+      ) {
+        // Set up the OAuth 2.0 authentication
+        var info = new OAuthInfo({
+          appId: "Ev2J6A53h3vOyiGZ",
+          portalUrl: "https://www.arcgis.com",
+          popup: true
+        });
+        esriId.registerOAuthInfos([info]);
+
+        // Check if the user is already signed in
+        esriId.checkSignInStatus(info.portalUrl).then(
+          function () {
+            // User is signed in, load the web map
+            loadWebMap();
+          },
+          function () {
+            // User is not signed in, show the sign-in button
+            document.getElementById("signInButton").style.display = "block";
+          }
+        );
+
+        // Handle sign-in button click
+        document.getElementById("signInButton").addEventListener("click", function () {
+          esriId.getCredential(info.portalUrl).then(function () {
+            // User has signed in, load the web map
+            loadWebMap();
+          });
+        });
+
+        function loadWebMap() {
+          // Create a new web map
+          var webmap = new WebMap({
+            portalItem: {
+              id: "ee5df0046625422989726e29ea171c83"
+            }
+          });
+
+          // Create a new map view and add it to the page
+          var view = new MapView({
+            container: "viewDiv",
+            map: webmap
+          });
+
+          // Get the user's ID from the authentication credentials
+          var credential = esriId.getCredential(info.portalUrl);
+          var userId = credential.userId;
+
+          if (userId === "Niels_PerfectPlace") {
+            var expression = "Gemeentenaam = Ede";
+            }
+
+          // Set up a feature layer and filter it based on the user's ID
+          var featureLayer = new FeatureLayer({
+            url: "https://perfectplace.maps.arcgis.com/home/item.html?id=331f850fee1d4b0d81ae888773b34139",
+            definitionExpression: expression
+          });
+          webmap.add(featureLayer);
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div id="viewDiv"></div>
+    <button id="signInButton" style="display: none;">Sign In</button>
+  </body>
+</html>
