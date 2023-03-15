@@ -29,6 +29,9 @@
           popup: false
         });
         esriId.registerOAuthInfos([info]);
+        
+        var token = credential.token
+        log.console(token)
 
         // Check if the user is already signed in
         esriId.checkSignInStatus(info.portalUrl).then(
