@@ -33,11 +33,11 @@
           popup: false
         });
         esriId.registerOAuthInfos([info]);
-        
+        var token
         var portal = new Portal();
         portal.authMode = "immediate";
         portal.load().then(function() {
-          var token = {
+          token = {
             'server': 'https://www.arcgis.com/sharing/rest',
              'token': portal.credential.token
           };
