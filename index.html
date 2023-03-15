@@ -30,8 +30,16 @@
         });
         esriId.registerOAuthInfos([info]);
         
-        var token = credential.token
-        log.console(token)
+        var portal = new Portal();
+          portal.authMode = "immediate";
+          portal.load().then(function() {
+            var token = {
+              'server': 'https://perfectplace.maps.arcgis.com/sharing/rest,
+               'token': portal.credential.token
+            };
+            esriId.registerToken(token);
+            var portalUsername = portal.user.username;
+          });
 
         // Check if the user is already signed in
         esriId.checkSignInStatus(info.portalUrl).then(
