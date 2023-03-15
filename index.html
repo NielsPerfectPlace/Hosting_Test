@@ -67,7 +67,7 @@
 
           // Get the user's ID from the authentication credentials
           var credential = esriId.getCredential(info.portalUrl);
-          var token = portal.credential.token
+          var token = credential.token
           console.log(token)
           var userId = credential.userId;
 
