@@ -9,17 +9,21 @@
     <script>
       require([
         "esri/config",
+        "esri/portal/Portal",
         "esri/WebMap",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
         "esri/identity/OAuthInfo",
+        "esri/portal/PortalQueryParams",
         "esri/identity/IdentityManager"
       ], function (
         esriConfig,
+        Portal,
         WebMap,
         MapView,
         FeatureLayer,
         OAuthInfo,
+        PortalQueryParams,
         esriId
       ) {
         // Set up the OAuth 2.0 authentication
