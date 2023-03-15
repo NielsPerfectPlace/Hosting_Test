@@ -68,10 +68,20 @@
             container: "viewDiv",
             map: webmap
           });
+          
+          var portal = new Portal();
+          portal.authMode = "immediate";
+          portal.load().then(function() {
+            var token = {
+              'server': 'https://www.arcgis.com/sharing/rest',
+               'token': portal.credential.token
+            };
+            esriId.registerToken(token);
+            var portalUsername = portal.user.username;
 
+          });
           // Get the user's ID from the authentication credentials
           var credential = esriId.getCredential(info.portalUrl);
-          var token = Portal.credential.token
           console.log(token)
           var userId = credential.userId;
 
