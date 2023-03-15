@@ -34,6 +34,17 @@
         });
         esriId.registerOAuthInfos([info]);
         
+        var portal = new Portal();
+        portal.authMode = "immediate";
+        portal.load().then(function() {
+          var token = {
+            'server': 'https://www.arcgis.com/sharing/rest',
+             'token': portal.credential.token
+          };
+          esriId.registerToken(token);
+          var portalUsername = portal.user.username;
+
+        });
 
         // Check if the user is already signed in
         esriId.checkSignInStatus(info.portalUrl).then(
@@ -69,17 +80,7 @@
             map: webmap
           });
           
-          var portal = new Portal();
-          portal.authMode = "immediate";
-          portal.load().then(function() {
-            var token = {
-              'server': 'https://www.arcgis.com/sharing/rest',
-               'token': portal.credential.token
-            };
-            esriId.registerToken(token);
-            var portalUsername = portal.user.username;
 
-          });
           // Get the user's ID from the authentication credentials
           var credential = esriId.getCredential(info.portalUrl);
           console.log(token)
