@@ -78,7 +78,7 @@
           });
         });
 
-        function loadWebMap() {
+        async function loadWebMap() {
           // Create a new web map
           var webmap = new WebMap({
             portalItem: {
@@ -91,15 +91,26 @@
             container: "viewDiv",
             map: webmap
           });
-          
 
           // Get the user's ID from the authentication credentials
-          var credential = esriId.getCredential(info.portalUrl);
+          var credential = await esriId.getCredential(info.portalUrl);
           var userId = credential.userId;
+
+          // Wait until userId is defined
+          await new Promise(resolve => {
+            (function waitForUserId() {
+              if (userId) {
+                resolve();
+              } else {
+                setTimeout(waitForUserId, 100);
+              }
+            })();
+          });
+
           console.log(userId)
           if (userId === "niels_PerfectPlace") {
             var expression = "gm_naam = Ede";
-            }
+          }
 
           // Set up a feature layer and filter it based on the user's ID
           var featureLayer = new FeatureLayer({
