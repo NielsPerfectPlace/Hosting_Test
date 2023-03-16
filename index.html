@@ -163,6 +163,20 @@
             container: "tableDiv"
           });
         }
+
+      
+        // listen for selection-change event on featureClass layer
+        featureLayer.on("selection-change", (event) => {
+          const selectedFeature = event.features[0];
+          const selectedAttributes = selectedFeature.attributes;
+
+          // filter featureTable based on Identificatie attribute of selected feature
+          const query = featureTable.createQuery();
+          query.where = `Identificatie = '${selectedAttributes.Identificatie}'`;
+          featureTable.queryFeatures(query).then((result) => {
+            // do something with the result (e.g. update table view)
+          });
+        });
         
       });
     </script>
