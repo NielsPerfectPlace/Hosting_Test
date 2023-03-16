@@ -46,8 +46,6 @@
         esriId,
         FeatureTable
       ) {
-        var featureLayer;
-        var pandTable;
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
           appId: "Ev2J6A53h3vOyiGZ",
@@ -127,14 +125,24 @@
           }
 
           // Set up a feature layer and filter it based on the user's ID
-          featureLayer = new FeatureLayer({
+          var featureLayer = new FeatureLayer({
             url: "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/LB_POC_JS_Map_WFL1/FeatureServer",
             definitionExpression: expression
           });
 
-          pandTable = new FeatureLayer({
+          var pandTable = new FeatureLayer({
             url:("https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer")
           })
+
+          // Listen to the selection-change event of the feature layer
+          featureLayer.on("selection-change", function(event) {
+            // Get the selected identificatie values
+            var selectedIds = event.features.map(function(feature) {
+              return feature.attributes.identificatie;
+            });
+            // Set the selectedRowIds property of the feature table
+            featureTable.selectedRowIds = selectedIds;
+          });
           webmap.add(featureLayer);
           
           const featureTable = new FeatureTable({
@@ -166,19 +174,7 @@
           });
         }
 
-      
-        // listen for selection-change event on featureClass layer
-        featureLayer.on("selection-change", (event) => {
-          const selectedFeature = event.features[0];
-          const selectedAttributes = selectedFeature.attributes;
 
-          // filter featureTable based on Identificatie attribute of selected feature
-          const query = featureTable.createQuery();
-          query.where = `Identificatie = '${selectedAttributes.Identificatie}'`;
-          featureTable.queryFeatures(query).then((result) => {
-            // do something with the result (e.g. update table view)
-          });
-        });
         
       });
     </script>
