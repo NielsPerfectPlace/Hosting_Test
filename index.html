@@ -46,6 +46,8 @@
         esriId,
         FeatureTable
       ) {
+        var featureLayer;
+        var pandTable;
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
           appId: "Ev2J6A53h3vOyiGZ",
@@ -125,12 +127,12 @@
           }
 
           // Set up a feature layer and filter it based on the user's ID
-          var featureLayer = new FeatureLayer({
+          featureLayer = new FeatureLayer({
             url: "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/LB_POC_JS_Map_WFL1/FeatureServer",
             definitionExpression: expression
           });
 
-          var pandTable = new FeatureLayer({
+          pandTable = new FeatureLayer({
             url:("https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer")
           })
           webmap.add(featureLayer);
