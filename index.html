@@ -256,7 +256,8 @@
           // This function is called when user completes drawing a rectangle
           // on the map. Use the rectangle to select features in the layer and table
           function selectFeatures(geometry) {
-            if (featureLayer && featureTable) {
+            if (featureLayer) {
+              console.log("TEST");
               // create a query and set its geometry parameter to the
               // rectangle that was drawn on the view
               const query = {
@@ -277,7 +278,6 @@
                   where: "identificatie IN ('" + selectedIdentificaties.join("','") + "')"
                 };
                 featureTable.filter(tableQuery);
-                console.log(tableQuery);
               })
 
                 .catch(errorCallback);
