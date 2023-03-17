@@ -257,7 +257,6 @@
           // on the map. Use the rectangle to select features in the layer and table
           function selectFeatures(geometry) {
             if (featureLayer) {
-              console.log("TEST");
               // create a query and set its geometry parameter to the
               // rectangle that was drawn on the view
               const query = {
@@ -267,8 +266,12 @@
 
                // Get the selected features on the map
               featureLayer.queryFeatures(query).then(function(result){
+                console.log("TEST");
+
                 // Get the Identificatie values of the selected features
                 const selectedIdentificaties = result.features.map(function(feature) {
+                  console.log(feature.attributes.identificatie);
+
                   return feature.attributes.identificatie;
                 });
 
