@@ -37,7 +37,12 @@
         "esri/identity/OAuthInfo",
         "esri/portal/PortalQueryParams",
         "esri/identity/IdentityManager",
-        "esri/widgets/FeatureTable"
+        "esri/widgets/FeatureTable",
+        "esri/Graphic",
+        "esri/layers/GraphicsLayer",
+        "esri/symbols/SimpleFillSymbol",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/symbols/SimpleMarkerSymbol"
 
       ], function (
         esriConfig,
@@ -48,7 +53,12 @@
         OAuthInfo,
         PortalQueryParams,
         esriId,
-        FeatureTable
+        FeatureTable,
+        Graphic,
+        GraphicsLayer,
+        SimpleFillSymbol,
+        SimpleLineSymbol,
+        SimpleMarkerSymbol
       ) {
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -181,6 +191,14 @@
 
           
         }
+        const selectionSymbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID,
+          new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT, new Color([255,0,0]), 2),
+          new Color([255,255,0,0.25])
+        );
+        const selectionLayer = new GraphicsLayer();
+          map.addLayer(selectionLayer);
+          selectionLayer.add(selectedFeature);
 
         
       });
