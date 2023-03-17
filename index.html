@@ -131,7 +131,7 @@
           });
 
           console.log(userId)
-          if (userId === "niels_PerfectPlace") {
+          if (userId === "LB_test") {
             var expression = "gm_naam = 'Ede'";
             var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer "
           }
@@ -141,7 +141,7 @@
 
           // Set up a feature layer and filter it based on the user's ID
           featureLayer = new FeatureLayer({
-            url: "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/LB_POC_JS_Map_WFL1/FeatureServer",
+            url: "https://utility.arcgis.com/usrsvcs/servers/cb13d5fc9ab4444ba147db50520fde21/rest/services/LB_POC_JS_Map_WFL1/FeatureServer",
             definitionExpression: expression
           });
 
