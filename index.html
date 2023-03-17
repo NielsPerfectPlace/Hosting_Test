@@ -265,7 +265,7 @@
 
 
                // Get the selected features on the map
-              featureLayerView.queryFeatures(query).then(function(result){
+              featureLayer.queryFeatures(query).then(function(result){
                 // Get the Identificatie values of the selected features
                 const selectedIdentificaties = result.features.map(function(feature) {
                   return feature.attributes.Identificatie;
