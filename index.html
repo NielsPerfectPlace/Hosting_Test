@@ -155,6 +155,7 @@
           const featureTable = new FeatureTable({
             layer: pandTable,
             multiSortEnabled: true,
+            highlightOnRowSelectEnabled: false,
             visibleElements: {selectionColumn: false}, // hide the selection column since we are not working with a corresponding map
             tableTemplate: { // autocastable to TableTemplate
             // The table template's columnTemplates are used to determine which attributes are shown in the table
@@ -177,8 +178,7 @@
               }
             ]
             },
-            container: "tableDiv",
-            highlightEnabled: true
+            container: "tableDiv"
 
           });
 
