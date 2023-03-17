@@ -190,7 +190,7 @@
         let features = [];
 
         // Listen for the table's selection-change event
-        featureTable.on("selection-change", (changes) => {
+        featureLayer.on("selection-change", (changes) => {
           // if the feature is unselected then remove the objectId
           // of the removed feature from the features array
           changes.removed.forEach((item) => {
@@ -204,11 +204,11 @@
 
           // If the selection is added, push all added selections to array
           changes.added.forEach((item) => {
-            features.push(item.attributes.identificatie;
+            features.push(item.attributes.identificatie);
           });
 
           // set excluded effect on the features that are not selected in the table
-          csvLayerView.featureEffect = {
+          featureLayer.featureEffect = {
             filter: {
               where: `NOT identificatie IN ('${features.join("','")}')`
             },
@@ -289,7 +289,7 @@
                   // pass in the query results to the table by calling its selectRows method.
                   // This will trigger FeatureTable's selection-change event
                   // where we will be setting the feature effect on the csv layer view
-                  const ids = results.attributes.identificati
+                  const ids = results.attributes.identificatie
                   console.log(results.attributes.identificatie)
                   const sql = `SELECT * FROM ${featureTable} WHERE Identificatie IN (${ids.map(v => "'" + v + "'").join(",")})`;
 
