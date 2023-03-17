@@ -209,6 +209,7 @@
 
           // If the selection is added, push all added selections to array
           changes.added.forEach((item) => {
+            console.log("TEST1")
             features.push(item.attributes.identificatie);
           });
 
@@ -294,8 +295,9 @@
                   // pass in the query results to the table by calling its selectRows method.
                   // This will trigger FeatureTable's selection-change event
                   // where we will be setting the feature effect on the csv layer view
+                  console.log("TEST")
                   const ids = results.attributes.identificatie
-                  console.log(results.attributes.identificatie)
+                  console.log(ids)
                   const sql = `SELECT * FROM ${featureTable} WHERE Identificatie IN (${ids.map(v => "'" + v + "'").join(",")})`;
 
                   featureTable.highlightIds.push(sql);
