@@ -40,7 +40,8 @@
         "esri/widgets/FeatureTable",
         "esri/geometry/geometryEngineAsync",
         "esri/layers/GraphicsLayer",
-        "esri/widgets/Sketch/SketchViewModel"
+        "esri/widgets/Sketch/SketchViewModel",
+
       ], function (
         esriConfig,
         Portal,
@@ -218,33 +219,33 @@
           // use the rectangle to select features on the map and table
           sketchViewModel.on("create", async (event) => {
             if (event.state === "complete") {
-              // this polygon will be used to query features that intersect it
-              const geometries = polygonGraphicsLayer.graphics.map(function (
+              // get the selected polygons' Identificatie field values
+              const selectedPolygons = polygonGraphicsLayer.graphics.filter(function (
                 graphic
               ) {
-                return graphic.geometry;
+                return graphic.geometry.intersects(event.graphic.geometry);
               });
-              const queryGeometry = await geometryEngineAsync.union(
-                geometries.toArray()
-              );
-              selectFeatures(queryGeometry);
+              const ids = selectedPolygons.map(function (graphic) {
+                return graphic.attributes.Identificatie;
+              });
+
+              selectFeatures(ids);
             }
           });
 
           // This function is called when user completes drawing a rectangle
           // on the map. Use the rectangle to select features in the layer and table
-          function selectFeatures(geometry) {
-            if (csvLayerView) {
-              // create a query and set its geometry parameter to the
-              // rectangle that was drawn on the view
+          function selectFeatures(ids) {
+            if (featureTable) {
+              // create a query and set its where parameter to the
+              // selected polygons' Identificatie field values
               const query = {
-                geometry: geometry,
-                outFields: ["*"]
+                where: `Identificatie IN ('${ids.join("', '")}')`,
+                outFields: ["*"],
               };
 
-              // query graphics from the csv layer view. Geometry set for the query
-              // can be polygon for point features and only intersecting geometries are returned
-              csvLayerView
+              // query graphics from the csv layer view
+              featureTable
                 .queryFeatures(query)
                 .then((results) => {
                   if (results.features.length === 0) {
@@ -253,7 +254,7 @@
                     // pass in the query results to the table by calling its selectRows method.
                     // This will trigger FeatureTable's selection-change event
                     // where we will be setting the feature effect on the csv layer view
-                    featureTable.filterGeometry = geometry;
+                    featureTable.filterWhere = query.where;
                     featureTable.selectRows(results.features);
                   }
                 })
@@ -264,7 +265,6 @@
           function errorCallback(error) {
             console.log("error happened:", error.message);
           }
-        }
 
         
       });
