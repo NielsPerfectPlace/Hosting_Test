@@ -37,10 +37,7 @@
         "esri/identity/OAuthInfo",
         "esri/portal/PortalQueryParams",
         "esri/identity/IdentityManager",
-        "esri/widgets/FeatureTable",
-        "esri/geometry/geometryEngineAsync",
-        "esri/layers/GraphicsLayer",
-        "esri/widgets/Sketch/SketchViewModel",
+        "esri/widgets/FeatureTable"
 
       ], function (
         esriConfig,
@@ -51,10 +48,7 @@
         OAuthInfo,
         PortalQueryParams,
         esriId,
-        FeatureTable,
-        geometryEngineAsync,
-        GraphicsLayer,
-        SketchViewModel
+        FeatureTable
       ) {
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -184,87 +178,6 @@
           });
 
           
-          // polygonGraphicsLayer will be used by the sketchviewmodel
-          // show the polygon being drawn on the view
-          const polygonGraphicsLayer = new GraphicsLayer();
-          webmap.add(polygonGraphicsLayer);
-
-          // add the select by rectangle button the view
-          view.ui.add("select-by-rectangle", "top-left");
-          const selectButton = document.getElementById("select-by-rectangle");
-
-          // click event for the select by rectangle button
-          selectButton.addEventListener("click", () => {
-            view.popup.close();
-            sketchViewModel.create("rectangle");
-          });
-
-          // add the clear selection button the view
-          view.ui.add("clear-selection", "top-left");
-          document
-            .getElementById("clear-selection")
-            .addEventListener("click", () => {
-              featureTable.clearSelection();
-              featureTable.filterGeometry = null;
-              polygonGraphicsLayer.removeAll();
-            });
-
-          // create a new sketch view model set its layer
-          const sketchViewModel = new SketchViewModel({
-            view: view,
-            layer: polygonGraphicsLayer
-          });
-
-          // Once user is done drawing a rectangle on the map
-          // use the rectangle to select features on the map and table
-          sketchViewModel.on("create", async (event) => {
-            if (event.state === "complete") {
-              // get the selected polygons' Identificatie field values
-              const selectedPolygons = polygonGraphicsLayer.graphics.filter(function (
-                graphic
-              ) {
-                return graphic.geometry.intersects(event.graphic.geometry);
-              });
-              const ids = selectedPolygons.map(function (graphic) {
-                return graphic.attributes.Identificatie;
-              });
-
-              selectFeatures(ids);
-            }
-          });
-
-          // This function is called when user completes drawing a rectangle
-          // on the map. Use the rectangle to select features in the layer and table
-          function selectFeatures(ids) {
-            if (featureTable) {
-              // create a query and set its where parameter to the
-              // selected polygons' Identificatie field values
-              const query = {
-                where: `Identificatie IN ('${ids.join("', '")}')`,
-                outFields: ["*"],
-              };
-
-              // query graphics from the csv layer view
-              featureTable
-                .queryFeatures(query)
-                .then((results) => {
-                  if (results.features.length === 0) {
-                    clearSelection();
-                  } else {
-                    // pass in the query results to the table by calling its selectRows method.
-                    // This will trigger FeatureTable's selection-change event
-                    // where we will be setting the feature effect on the csv layer view
-                    featureTable.filterWhere = query.where;
-                    featureTable.selectRows(results.features);
-                  }
-                })
-                .catch(errorCallback);
-            }
-          }
-
-          function errorCallback(error) {
-            console.log("error happened:", error.message);
-          }
         }
 
         
