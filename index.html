@@ -260,20 +260,23 @@
               // create a query and set its geometry parameter to the
               // rectangle that was drawn on the view
               const query = {
+                
+                geometry: geometry,
                 outFields: ["*"]
               };
 
 
                // Get the selected features on the map
               featureLayer.queryFeatures(query).then(function(result){
-                console.log("TEST");
+                if (results.features.length === 0) {
+                  clearSelection();
+                } else {
 
                 // Get the Identificatie values of the selected features
                 const selectedIdentificaties = result.features.map(function(feature) {
-                  console.log(feature.attributes.identificatie);
 
                   return feature.attributes.identificatie;
-                });
+                });}
 
 
                 // Filter the table by the selected Identificatie values
