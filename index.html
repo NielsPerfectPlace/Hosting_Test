@@ -37,7 +37,13 @@
         "esri/identity/OAuthInfo",
         "esri/portal/PortalQueryParams",
         "esri/identity/IdentityManager",
-        "esri/widgets/FeatureTable"
+        "esri/widgets/FeatureTable",
+        "esri/Graphic",
+        "esri/layers/GraphicsLayer",
+        "esri/symbols/SimpleFillSymbol",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/Color"
 
       ], function (
         esriConfig,
@@ -48,8 +54,15 @@
         OAuthInfo,
         PortalQueryParams,
         esriId,
-        FeatureTable
+        FeatureTable,
+        Graphic,
+        GraphicsLayer,
+        SimpleFillSymbol,
+        SimpleLineSymbol,
+        SimpleMarkerSymbol,
+        Color
       ) {
+
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
           appId: "Ev2J6A53h3vOyiGZ",
@@ -90,16 +103,18 @@
           });
         });
 
+        var webmap, view, featureLayer, pandTable, featureTable, urlTable;
+
         async function loadWebMap() {
           // Create a new web map
-          var webmap = new WebMap({
+          webmap = new WebMap({
             portalItem: {
               id: "ee5df0046625422989726e29ea171c83"
             }
           });
 
           // Create a new map view and add it to the page
-          var view = new MapView({
+          view = new MapView({
             container: "viewDiv",
             map: webmap
           });
@@ -129,12 +144,12 @@
           }
 
           // Set up a feature layer and filter it based on the user's ID
-          var featureLayer = new FeatureLayer({
+          featureLayer = new FeatureLayer({
             url: "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/LB_POC_JS_Map_WFL1/FeatureServer",
             definitionExpression: expression
           });
 
-          var pandTable = new FeatureLayer({
+          pandTable = new FeatureLayer({
             url:("https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer")
           })
 
@@ -181,6 +196,14 @@
 
           
         }
+        const selectionSymbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID,
+          new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT, new Color([255,0,0]), 2),
+          new Color([255,255,0,0.25])
+        );
+        const selectionLayer = new GraphicsLayer();
+          webmap.addLayer(selectionLayer);
+          selectionLayer.add(selectedFeature);
 
         
       });
