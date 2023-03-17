@@ -280,10 +280,10 @@
 
 
                 // Filter the table by the selected Identificatie values
-                var tableQuery = {
+                const tableQuery = {
                   where: "identificatie IN ('" + selectedIdentificaties.join("','") + "')"
                 };
-                featureTable.filter(tableQuery);
+                featureTable.setDefinitionExpression(tableQuery);
               })
 
                 .catch(errorCallback);
