@@ -42,7 +42,8 @@
         "esri/layers/GraphicsLayer",
         "esri/symbols/SimpleFillSymbol",
         "esri/symbols/SimpleLineSymbol",
-        "esri/symbols/SimpleMarkerSymbol"
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/Color"
 
       ], function (
         esriConfig,
@@ -58,7 +59,8 @@
         GraphicsLayer,
         SimpleFillSymbol,
         SimpleLineSymbol,
-        SimpleMarkerSymbol
+        SimpleMarkerSymbol,
+        Color
       ) {
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
