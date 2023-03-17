@@ -43,7 +43,9 @@
         "esri/identity/OAuthInfo",
         "esri/portal/PortalQueryParams",
         "esri/identity/IdentityManager",
-        "esri/widgets/FeatureTable"
+        "esri/widgets/FeatureTable",  
+        "esri/tasks/ShareTask",
+        "esri/tasks/ShareTaskParameters"
       ], function (
         esriConfig,
         Portal,
@@ -53,7 +55,9 @@
         OAuthInfo,
         PortalQueryParams,
         esriId,
-        FeatureTable
+        FeatureTable,
+        ShareTask, 
+        ShareTaskParameters
       ) {
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -95,6 +99,8 @@
           });
         });
 
+
+
         async function loadWebMap() {
           // Create a new web map
           var webmap = new WebMap({
@@ -125,9 +131,22 @@
           });
 
           console.log(userId)
-          if (userId === "niels_PerfectPlace") {
+          if (userId === "test_LB") {
             var expression = "gm_naam = 'Ede'";
             var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer "
+
+                // Share the feature layer with Niels_PerfectPlace
+            var shareTask = new ShareTask("https://www.arcgis.com/sharing/rest/content/items");
+            var params = new ShareTaskParameters({
+              itemId: "331f850fee1d4b0d81ae888773b34139", // replace with the item ID of your feature layer
+              account: "test_LB",
+              level: "view"
+            });
+            shareTask.share(params).then(function(result) {
+              console.log("Item shared successfully");
+            }, function(error) {
+              console.log("Error sharing item: ", error);
+            });
           }
           else{
             var urlTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/LB_POC_JS_Map_WFL1/FeatureServer"
