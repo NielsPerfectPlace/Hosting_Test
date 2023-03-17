@@ -26,7 +26,7 @@
         width: 100%;
       }
     </style>
-    <script src="https://js.arcgis.com/4.26/"></script>
+    <script src="https://js.arcgis.com/4.22/"></script>
     <script>
       require([
         "esri/config",
@@ -37,10 +37,7 @@
         "esri/identity/OAuthInfo",
         "esri/portal/PortalQueryParams",
         "esri/identity/IdentityManager",
-        "esri/widgets/FeatureTable",
-        "esri/geometry/geometryEngineAsync",
-        "esri/layers/GraphicsLayer",
-        "esri/widgets/Sketch/SketchViewModel",
+        "esri/widgets/FeatureTable"
 
       ], function (
         esriConfig,
@@ -51,10 +48,7 @@
         OAuthInfo,
         PortalQueryParams,
         esriId,
-        FeatureTable,
-        geometryEngineAsync,
-        GraphicsLayer,
-        SketchViewModel
+        FeatureTable
       ) {
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -144,7 +138,15 @@
             url:("https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer")
           })
 
-          
+          // Listen to the selection-change event of the feature layer
+          featureLayer.on("selection-change", function(event) {
+            // Get the selected identificatie values
+            var selectedIds = event.features.map(function(feature) {
+              return feature.attributes.identificatie;
+            });
+            // Set the selectedRowIds property of the feature table
+            featureTable.selectedRowIds = selectedIds;
+          });
           webmap.add(featureLayer);
           
           const featureTable = new FeatureTable({
@@ -172,127 +174,12 @@
               }
             ]
             },
-            container: "tableDiv"
+            container: "tableDiv",
+            highlightEnabled: true
+
           });
-          // this array will keep track of selected feature objectIds to
-          // sync the layerview feature effects and feature table selection
-          let features = [];
 
-          // Listen for the table's selection-change event
-          featureTable.on("selection-change", (changes) => {
-            // if the feature is unselected then remove the objectId
-            // of the removed feature from the features array
-            changes.removed.forEach((item) => {
-              const data = features.find((data) => {
-                return data === item.Identificatie;
-              });
-              if (data) {
-                features.splice(features.indexOf(data), 1);
-              }
-            });
-
-            // If the selection is added, push all added selections to array
-            changes.added.forEach((item) => {
-              features.push(item.objectId);
-            });
-
-          // set excluded effect on the features that are not selected in the table
-          featureLayer.featureEffect = {
-            filter: {
-              objectIds: features
-            },
-            excludedEffect: "blur(5px) grayscale(90%) opacity(40%)"
-          };
-        });
           
-        // polygonGraphicsLayer will be used by the sketchviewmodel
-          // show the polygon being drawn on the view
-          const polygonGraphicsLayer = new GraphicsLayer();
-          webmap.add(polygonGraphicsLayer);
-
-          // add the select by rectangle button the view
-          view.ui.add("select-by-rectangle", "top-left");
-          const selectButton = document.getElementById("select-by-rectangle");
-
-          // click event for the select by rectangle button
-          selectButton.addEventListener("click", () => {
-            view.popup.close();
-            sketchViewModel.create("rectangle");
-          });
-
-          // add the clear selection button the view
-          view.ui.add("clear-selection", "top-left");
-          document
-            .getElementById("clear-selection")
-            .addEventListener("click", () => {
-              featureTable.clearSelection();
-              featureTable.filterGeometry = null;
-              polygonGraphicsLayer.removeAll();
-            });
-
-          // create a new sketch view model set its layer
-          const sketchViewModel = new SketchViewModel({
-            view: view,
-            layer: polygonGraphicsLayer
-          });
-
-          // Once user is done drawing a rectangle on the map
-          // use the rectangle to select features on the map and table
-          sketchViewModel.on("create", async (event) => {
-            if (event.state === "complete") {
-              // this polygon will be used to query features that intersect it
-              const geometries = polygonGraphicsLayer.graphics.map(function (
-                graphic
-              ) {
-                return graphic.geometry;
-              });
-              const queryGeometry = await geometryEngineAsync.union(
-                geometries.toArray()
-              );
-              selectFeatures(queryGeometry);
-            }
-          });
-
-          // This function is called when user completes drawing a rectangle
-          // on the map. Use the rectangle to select features in the layer and table
-          function selectFeatures(geometry) {
-            if (featureLayer) {
-              // create a query and set its geometry parameter to the
-              // rectangle that was drawn on the view
-              var query = {
-                
-                geometry: geometry,
-                outFields: ["*"]
-              };
-
-
-               // Get the selected features on the map
-              featureLayer.queryFeatures(query).then(function(result){
-                if (result.features.length === 0) {
-                  clearSelection();
-                } else {
-
-                // Get the Identificatie values of the selected features
-                var selectedIdentificaties = result.features.map(function(feature) {
-
-                  return feature.attributes.identificatie;
-                });}
-
-
-                // Filter the table by the selected Identificatie values
-                const tableQuery = {
-                  where: "identificatie IN ('" + selectedIdentificaties.join("','") + "')"
-                };
-                featureTable.setDefinitionExpression(tableQuery);
-              })
-
-                .catch(errorCallback);
-            }
-          }
-
-          function errorCallback(error) {
-            console.log("error happened:", error.message);
-          }
         }
 
         
