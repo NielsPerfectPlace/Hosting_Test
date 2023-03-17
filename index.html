@@ -187,89 +187,91 @@
             },
             container: "tableDiv"
           });
-        }
 
-        // polygonGraphicsLayer will be used by the sketchviewmodel
-        // show the polygon being drawn on the view
-        const polygonGraphicsLayer = new GraphicsLayer();
-        webmap.add(polygonGraphicsLayer);
+          
+          // polygonGraphicsLayer will be used by the sketchviewmodel
+          // show the polygon being drawn on the view
+          const polygonGraphicsLayer = new GraphicsLayer();
+          webmap.add(polygonGraphicsLayer);
 
-        // add the select by rectangle button the view
-        view.ui.add("select-by-rectangle", "top-left");
-        const selectButton = document.getElementById("select-by-rectangle");
+          // add the select by rectangle button the view
+          view.ui.add("select-by-rectangle", "top-left");
+          const selectButton = document.getElementById("select-by-rectangle");
 
-        // click event for the select by rectangle button
-        selectButton.addEventListener("click", () => {
-          view.popup.close();
-          sketchViewModel.create("rectangle");
-        });
-
-        // add the clear selection button the view
-        view.ui.add("clear-selection", "top-left");
-        document
-          .getElementById("clear-selection")
-          .addEventListener("click", () => {
-            featureTable.clearSelection();
-            featureTable.filterGeometry = null;
-            polygonGraphicsLayer.removeAll();
+          // click event for the select by rectangle button
+          selectButton.addEventListener("click", () => {
+            view.popup.close();
+            sketchViewModel.create("rectangle");
           });
 
-        // create a new sketch view model set its layer
-        const sketchViewModel = new SketchViewModel({
-          view: view,
-          layer: polygonGraphicsLayer
-        });
-
-        // Once user is done drawing a rectangle on the map
-        // use the rectangle to select features on the map and table
-        sketchViewModel.on("create", async (event) => {
-          if (event.state === "complete") {
-            // this polygon will be used to query features that intersect it
-            const geometries = polygonGraphicsLayer.graphics.map(function (
-              graphic
-            ) {
-              return graphic.geometry;
+          // add the clear selection button the view
+          view.ui.add("clear-selection", "top-left");
+          document
+            .getElementById("clear-selection")
+            .addEventListener("click", () => {
+              featureTable.clearSelection();
+              featureTable.filterGeometry = null;
+              polygonGraphicsLayer.removeAll();
             });
-            const queryGeometry = await geometryEngineAsync.union(
-              geometries.toArray()
-            );
-            selectFeatures(queryGeometry);
+
+          // create a new sketch view model set its layer
+          const sketchViewModel = new SketchViewModel({
+            view: view,
+            layer: polygonGraphicsLayer
+          });
+
+          // Once user is done drawing a rectangle on the map
+          // use the rectangle to select features on the map and table
+          sketchViewModel.on("create", async (event) => {
+            if (event.state === "complete") {
+              // this polygon will be used to query features that intersect it
+              const geometries = polygonGraphicsLayer.graphics.map(function (
+                graphic
+              ) {
+                return graphic.geometry;
+              });
+              const queryGeometry = await geometryEngineAsync.union(
+                geometries.toArray()
+              );
+              selectFeatures(queryGeometry);
+            }
+          });
+
+          // This function is called when user completes drawing a rectangle
+          // on the map. Use the rectangle to select features in the layer and table
+          function selectFeatures(geometry) {
+            if (csvLayerView) {
+              // create a query and set its geometry parameter to the
+              // rectangle that was drawn on the view
+              const query = {
+                geometry: geometry,
+                outFields: ["*"]
+              };
+
+              // query graphics from the csv layer view. Geometry set for the query
+              // can be polygon for point features and only intersecting geometries are returned
+              csvLayerView
+                .queryFeatures(query)
+                .then((results) => {
+                  if (results.features.length === 0) {
+                    clearSelection();
+                  } else {
+                    // pass in the query results to the table by calling its selectRows method.
+                    // This will trigger FeatureTable's selection-change event
+                    // where we will be setting the feature effect on the csv layer view
+                    featureTable.filterGeometry = geometry;
+                    featureTable.selectRows(results.features);
+                  }
+                })
+                .catch(errorCallback);
+            }
           }
-        });
 
-        // This function is called when user completes drawing a rectangle
-        // on the map. Use the rectangle to select features in the layer and table
-        function selectFeatures(geometry) {
-          if (csvLayerView) {
-            // create a query and set its geometry parameter to the
-            // rectangle that was drawn on the view
-            const query = {
-              geometry: geometry,
-              outFields: ["*"]
-            };
-
-            // query graphics from the csv layer view. Geometry set for the query
-            // can be polygon for point features and only intersecting geometries are returned
-            csvLayerView
-              .queryFeatures(query)
-              .then((results) => {
-                if (results.features.length === 0) {
-                  clearSelection();
-                } else {
-                  // pass in the query results to the table by calling its selectRows method.
-                  // This will trigger FeatureTable's selection-change event
-                  // where we will be setting the feature effect on the csv layer view
-                  featureTable.filterGeometry = geometry;
-                  featureTable.selectRows(results.features);
-                }
-              })
-              .catch(errorCallback);
+          function errorCallback(error) {
+            console.log("error happened:", error.message);
           }
         }
 
-        function errorCallback(error) {
-          console.log("error happened:", error.message);
-        }
         
       });
     </script>
