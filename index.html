@@ -37,7 +37,11 @@
         "esri/identity/OAuthInfo",
         "esri/portal/PortalQueryParams",
         "esri/identity/IdentityManager",
-        "esri/widgets/FeatureTable"
+        "esri/widgets/FeatureTable",
+        "esri/layers/GraphicsLayer",
+        "esri/widgets/Sketch/SketchViewModel",
+        "esri/Graphic",
+        "esri/geometry/geometryEngineAsync"
 
       ], function (
         esriConfig,
@@ -48,7 +52,11 @@
         OAuthInfo,
         PortalQueryParams,
         esriId,
-        FeatureTable
+        FeatureTable,
+        GraphicsLayer,
+        SketchViewModel,
+        Graphic,
+        geometryEngineAsync
       ) {
 
         // Set up the OAuth 2.0 authentication
@@ -328,4 +336,4 @@
       <div id="tableDiv"></div>
     </div>
   </body>
-</html>
+</html> 
