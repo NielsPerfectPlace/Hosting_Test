@@ -7,22 +7,31 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>ArcGIS Login and WebMap Filter Example</title>
     <link rel="stylesheet" href="https://js.arcgis.com/4.22/esri/themes/light/main.css">
-        <style>
-      html,
-      body,
-      #viewDiv {
-        height: 75%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #tableDiv {
-        height:25%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
+      <style>
+        body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+        }
+        #viewDiv {
+          height: 50%;
+          width: 80%;
+          margin: auto;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        #tableDiv {
+          height: 25%;
+          width: 80%;
+          margin: auto;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      </style>
     <script src="https://js.arcgis.com/4.22/"></script>
     <script>
       require([
