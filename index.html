@@ -277,6 +277,7 @@
                   where: "identificatie IN ('" + selectedIdentificaties.join("','") + "')"
                 };
                 featureTable.filter(tableQuery);
+                console.log(tableQuery);
               })
 
                 .catch(errorCallback);
@@ -285,7 +286,6 @@
 
           function errorCallback(error) {
             console.log("error happened:", error.message);
-            console.log(tableQuery)
           }
         }
 
