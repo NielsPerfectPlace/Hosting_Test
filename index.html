@@ -268,7 +268,7 @@
 
                // Get the selected features on the map
               featureLayer.queryFeatures(query).then(function(result){
-                if (results.features.length === 0) {
+                if (result.features.length === 0) {
                   clearSelection();
                 } else {
 
