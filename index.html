@@ -268,13 +268,13 @@
               featureLayer.queryFeatures(query).then(function(result){
                 // Get the Identificatie values of the selected features
                 const selectedIdentificaties = result.features.map(function(feature) {
-                  return feature.attributes.Identificatie;
+                  return feature.attributes.identificatie;
                 });
 
 
                 // Filter the table by the selected Identificatie values
                 const tableQuery = {
-                  where: "Identificatie IN ('" + selectedIdentificaties.join("','") + "')"
+                  where: "identificatie IN ('" + selectedIdentificaties.join("','") + "')"
                 };
                 featureTable.filter(tableQuery);
               })
@@ -285,6 +285,7 @@
 
           function errorCallback(error) {
             console.log("error happened:", error.message);
+            console.log(tableQuery)
           }
         }
 
