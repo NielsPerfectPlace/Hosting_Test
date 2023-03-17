@@ -259,7 +259,7 @@
             if (featureLayer) {
               // create a query and set its geometry parameter to the
               // rectangle that was drawn on the view
-              const query = {
+              var query = {
                 
                 geometry: geometry,
                 outFields: ["*"]
@@ -273,14 +273,14 @@
                 } else {
 
                 // Get the Identificatie values of the selected features
-                const selectedIdentificaties = result.features.map(function(feature) {
+                var selectedIdentificaties = result.features.map(function(feature) {
 
                   return feature.attributes.identificatie;
                 });}
 
 
                 // Filter the table by the selected Identificatie values
-                const tableQuery = {
+                var tableQuery = {
                   where: "identificatie IN ('" + selectedIdentificaties.join("','") + "')"
                 };
                 featureTable.filter(tableQuery);
