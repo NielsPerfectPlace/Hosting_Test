@@ -117,7 +117,7 @@
               view: view,
               layer: pandTable,
               //multiSortEnabled: true,
-              //highlightOnRowSelectEnabled: true,
+              highlightEnabled: true,
               visibleElements: {
               // Autocast to VisibleElements
               menuItems: {
@@ -159,7 +159,7 @@
             featureLayer.definitionExpression = expression;
           }
 
-          // Listen for changes in the collection of highlighted features
+        // Listen for changes in the collection of highlighted features
         featureTable.highlightIds.on("change", (event) => {
           console.log("features selected", event.added);
           console.log("features deselected", event.removed);
