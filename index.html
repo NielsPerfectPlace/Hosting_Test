@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>ArcGIS Login and WebMap Filter Example</title>
-    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.22/esri/themes/light/main.css">
     <style>
       html,
       body {
@@ -24,7 +24,7 @@
         width: 100%;
       }
     </style>
-    <script src="https://js.arcgis.com/4.26/"></script>
+    <script src="https://js.arcgis.com/4.22/"></script>
     <script>
       require([
         "esri/config",
@@ -71,7 +71,7 @@
           });
         });
 
-        var webmap, view, featureLayer, pandTable, featureTable, urlTable;
+        var webmap, view, featureLayer, featureTable, urlTable, pandTable;
 
         async function loadWebMap() {
           // Create a new web map
@@ -98,43 +98,6 @@
           await new Promise(resolve => {
             (function waitForUsername() {
               if (username) {
-                if (username === "niels_PerfectPlace") {
-                  var expression = "gm_naam = 'Ede'";
-                  var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
-                  pandTable = new FeatureLayer({
-                      url:(idTable)
-                    })
-                  featureTable = new FeatureTable({
-                    layer: pandTable,
-                    multiSortEnabled: true,
-                    highlightOnRowSelectEnabled: true,
-                    visibleElements: {selectionColumn: true}, // hide the selection column since we are not working with a corresponding map
-                    tableTemplate: { // autocastable to TableTemplate
-                    // The table template's columnTemplates are used to determine which attributes are shown in the table
-                      columnTemplates: [ // Array of either FieldColumnTemplates or GroupColumnTemplates
-                      {
-                        type:"identificatie",
-                        name:"identificatie",
-                        label: "identificatie"
-                      },
-                      
-                      { // autocastable to FieldColumnTemplate
-                        type: "field",
-                        name: "gm_naam",
-                        label: "gm_naam"
-                      },
-                      {
-                        type: "field",
-                        name: "Opmerkingen",
-                        label: "Opmerkingen"
-                      }
-                    ]
-                    },
-                    container: "tableDiv"
-
-                  });
-                  
-                }
                 resolve();
               } else {
                 setTimeout(waitForUsername, 100);
@@ -142,8 +105,43 @@
             })();
           });
 
+          if (username === "niels_PerfectPlace") {
+            var expression = "gm_naam = 'Ede'";
+            var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
+            
+          }
+          pandTable = new FeatureLayer({
+              url:(idTable)
+            })
+          const featureTable = new FeatureTable({
+            layer: pandTable,
+            multiSortEnabled: true,
+            highlightOnRowSelectEnabled: true,
+            visibleElements: {selectionColumn: true}, // hide the selection column since we are not working with a corresponding map
+            tableTemplate: { // autocastable to TableTemplate
+            // The table template's columnTemplates are used to determine which attributes are shown in the table
+              columnTemplates: [ // Array of either FieldColumnTemplates or GroupColumnTemplates
+              {
+                type:"identificatie",
+                name:"identificatie",
+                label: "identificatie"
+              },
+              
+              { // autocastable to FieldColumnTemplate
+                type: "field",
+                name: "gm_naam",
+                label: "gm_naam"
+              },
+              {
+                type: "field",
+                name: "Opmerkingen",
+                label: "Opmerkingen"
+              }
+            ]
+            },
+            container: "tableDiv"
 
-
+          });
 
           // Get the first layer in the web map and filter it based on the user's username
           featureLayer = webmap.layers.getItemAt(0);
