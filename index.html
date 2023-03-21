@@ -116,7 +116,7 @@
             layer: pandTable,
             multiSortEnabled: true,
             highlightOnRowSelectEnabled: false,
-            visibleElements: {selectionColumn: false}, // hide the selection column since we are not working with a corresponding map
+            visibleElements: {selectionColumn: true}, // hide the selection column since we are not working with a corresponding map
             tableTemplate: { // autocastable to TableTemplate
             // The table template's columnTemplates are used to determine which attributes are shown in the table
               columnTemplates: [ // Array of either FieldColumnTemplates or GroupColumnTemplates
@@ -142,7 +142,6 @@
 
           });
 
-
           // Get the first layer in the web map and filter it based on the user's username
           featureLayer = webmap.layers.getItemAt(0);
           featureLayer.definitionExpression = expression;
@@ -153,9 +152,7 @@
   
   <body>
     <div id="viewDiv"></div>
-    <div class="container">
-      <div id="tableDiv"></div>
-    </div>
+    <div id="tableDiv"></div>
     <button id="signInButton" style="display: none;">Sign In</button>
   </body>
 </html> 
