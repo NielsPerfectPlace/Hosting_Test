@@ -33,13 +33,16 @@
         "esri/layers/FeatureLayer",
         "esri/identity/OAuthInfo",
         "esri/identity/IdentityManager",
+        "esri/widgets/FeatureTable"
+
       ], function (
         esriConfig,
         WebMap,
         MapView,
         FeatureLayer,
         OAuthInfo,
-        esriId
+        esriId,
+        FeatureTable
       ) {
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
