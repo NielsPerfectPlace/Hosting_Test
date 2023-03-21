@@ -71,7 +71,7 @@
           });
         });
 
-        var webmap, view, featureLayer, featureTable;
+        var webmap, view, featureLayer, pandTable, featureTable, urlTable;
 
         async function loadWebMap() {
           // Create a new web map
@@ -110,13 +110,13 @@
             var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
             
           }
-          var pandTable = new FeatureLayer({
+          pandTable = new FeatureLayer({
               url:(idTable)
             })
-          const featureTable = new FeatureTable({
+          featureTable = new FeatureTable({
             layer: pandTable,
             multiSortEnabled: true,
-            highlightOnRowSelectEnabled: false,
+            highlightOnRowSelectEnabled: true,
             visibleElements: {selectionColumn: true}, // hide the selection column since we are not working with a corresponding map
             tableTemplate: { // autocastable to TableTemplate
             // The table template's columnTemplates are used to determine which attributes are shown in the table
