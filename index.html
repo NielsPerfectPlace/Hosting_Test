@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html>
+
+  
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -24,32 +26,58 @@
         width: 100%;
       }
     </style>
-    <script src="https://js.arcgis.com/4.26/"></script>
+    <script src="https://js.arcgis.com/4.22/"></script>
     <script>
       require([
         "esri/config",
+        "esri/portal/Portal",
         "esri/WebMap",
         "esri/views/MapView",
         "esri/layers/FeatureLayer",
         "esri/identity/OAuthInfo",
+        "esri/portal/PortalQueryParams",
         "esri/identity/IdentityManager",
-        "esri/widgets/FeatureTable"
+        "esri/widgets/FeatureTable",
+        "esri/layers/GraphicsLayer",
+        "esri/widgets/Sketch/SketchViewModel",
+        "esri/Graphic",
+        "esri/geometry/geometryEngineAsync"
 
       ], function (
         esriConfig,
+        Portal,
         WebMap,
         MapView,
         FeatureLayer,
         OAuthInfo,
+        PortalQueryParams,
         esriId,
-        FeatureTable
+        FeatureTable,
+        GraphicsLayer,
+        SketchViewModel,
+        Graphic,
+        geometryEngineAsync
       ) {
+
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
           appId: "Ev2J6A53h3vOyiGZ",
+          //portalUrl: "https://www.arcgis.com",
           popup: false
         });
         esriId.registerOAuthInfos([info]);
+        var token
+        var portal = new Portal();
+        portal.authMode = "immediate";
+        portal.load().then(function() {
+          token = {
+            'server': 'https://www.arcgis.com/sharing/rest',
+             'token': portal.credential.token
+          };
+          esriId.registerToken(token);
+          var portalUsername = portal.user.username;
+
+        });
 
         // Check if the user is already signed in
         esriId.checkSignInStatus(info.portalUrl).then(
@@ -71,7 +99,7 @@
           });
         });
 
-        var webmap, view, featureLayer, pandTable;
+        var webmap, view, featureLayer, pandTable, featureTable, urlTable;
 
         async function loadWebMap() {
           // Create a new web map
@@ -87,31 +115,51 @@
             map: webmap
           });
 
-          // Wait until the view is ready
-          await view.when();
-
-          // Get the user's username from the authentication credentials
+          // Get the user's ID from the authentication credentials
           var credential = await esriId.getCredential(info.portalUrl);
-          var username = credential.userId;
+          var userId = credential.userId;
 
-          // Wait until the username is defined
+          // Wait until userId is defined
           await new Promise(resolve => {
-            (function waitForUsername() {
-              if (username) {
+            (function waitForUserId() {
+              if (userId) {
                 resolve();
               } else {
-                setTimeout(waitForUsername, 100);
+                setTimeout(waitForUserId, 100);
               }
             })();
           });
 
-          if (username === "niels_PerfectPlace") {
+          console.log(userId)
+          if (userId === "niels_PerfectPlace") {
             var expression = "gm_naam = 'Ede'";
-            var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
-            pandTable = new FeatureLayer({
-              url:(idTable)
-            })
+            var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer "
           }
+          else{
+            var urlTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/LB_POC_JS_Map_WFL1/FeatureServer"
+          }
+
+          // Set up a feature layer and filter it based on the user's ID
+          featureLayer = new FeatureLayer({
+            url: "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/LB_POC_JS_Map_WFL1/FeatureServer",
+            definitionExpression: expression
+          });
+
+          pandTable = new FeatureLayer({
+            url:("https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer")
+          })
+
+          // Listen to the selection-change event of the feature layer
+          featureLayer.on("selection-change", function(event) {
+            // Get the selected identificatie values
+            var selectedIds = event.features.map(function(feature) {
+              return feature.attributes.identificatie;
+            });
+            // Set the selectedRowIds property of the feature table
+            featureTable.selectedRowIds = selectedIds;
+          });
+          webmap.add(featureLayer);
+          
           const featureTable = new FeatureTable({
             layer: pandTable,
             multiSortEnabled: true,
@@ -142,17 +190,154 @@
 
           });
 
-          // Get the first layer in the web map and filter it based on the user's username
-          featureLayer = webmap.layers.getItemAt(0);
-          featureLayer.definitionExpression = expression;
+          // this array will keep track of selected feature objectIds to
+        // sync the layerview feature effects and feature table selection
+        let features = [];
+
+        // Listen for the table's selection-change event
+        featureLayer.on("selection-change", (changes) => {
+          // if the feature is unselected then remove the objectId
+          // of the removed feature from the features array
+          changes.removed.forEach((item) => {
+            const data = features.find((data) => {
+              return data === item.attributes.identificatie;
+            });
+            if (data) {
+              features.splice(features.indexOf(data), 1);
+            }
+          });
+
+          // If the selection is added, push all added selections to array
+          changes.added.forEach((item) => {
+            features.push(item.attributes.identificatie);
+          });
+
+          // set excluded effect on the features that are not selected in the table
+          featureLayer.featureEffect = {
+            filter: {
+              where: `NOT identificatie IN ('${features.join("','")}')`
+            },
+            excludedEffect: "blur(5px) grayscale(90%) opacity(40%)"
+          };
+        });
+
+
+
+
+        // polygonGraphicsLayer will be used by the sketchviewmodel
+        // show the polygon being drawn on the view
+        const polygonGraphicsLayer = new GraphicsLayer();
+        webmap.add(polygonGraphicsLayer);
+
+        // add the select by rectangle button the view
+        view.ui.add("select-by-rectangle", "top-left");
+        const selectButton = document.getElementById("select-by-rectangle");
+
+        // click event for the select by rectangle button
+        selectButton.addEventListener("click", () => {
+          view.popup.close();
+          sketchViewModel.create("rectangle");
+        });
+
+        // add the clear selection button the view
+        view.ui.add("clear-selection", "top-left");
+        document
+          .getElementById("clear-selection")
+          .addEventListener("click", () => {
+            featureTable.clearSelection();
+            featureTable.filterGeometry = null;
+            polygonGraphicsLayer.removeAll();
+          });
+
+        // create a new sketch view model set its layer
+        const sketchViewModel = new SketchViewModel({
+          view: view,
+          layer: polygonGraphicsLayer
+        });
+
+        // Once user is done drawing a rectangle on the map
+        // use the rectangle to select features on the map and table
+        sketchViewModel.on("create", async (event) => {
+          if (event.state === "complete") {
+            // this polygon will be used to query features that intersect it
+            const geometries = polygonGraphicsLayer.graphics.map(function (
+              graphic
+            ) {
+              return graphic.geometry;
+            });
+            const queryGeometry = await geometryEngineAsync.union(
+              geometries.toArray()
+            );
+            selectFeatures(queryGeometry);
+          }
+        });
+
+        // This function is called when user completes drawing a rectangle
+        // on the map. Use the rectangle to select features in the layer and table
+        function selectFeatures(geometry) {
+          if (featureLayer) {
+            // create a query and set its geometry parameter to the
+            // rectangle that was drawn on the view
+            const query = {
+              geometry: geometry,
+              outFields: ["*"]
+            };
+
+            // query graphics from the csv layer view. Geometry set for the query
+            // can be polygon for point features and only intersecting geometries are returned
+            featureLayer
+              .queryFeatures(query)
+              .then((results) => {
+                if (results.features.length === 0) {
+                  clearSelection();
+                } else {
+                  // pass in the query results to the table by calling its selectRows method.
+                  // This will trigger FeatureTable's selection-change event
+                  // where we will be setting the feature effect on the csv layer view
+                  console.log("TEST")
+                  const ids = results.attributes.identificatie
+                  console.log(ids)
+                  const sql = `SELECT * FROM ${featureTable} WHERE Identificatie IN (${ids.map(v => "'" + v + "'").join(",")})`;
+
+                  featureTable.highlightIds.push(sql);
+                }
+              })
+              .catch(errorCallback);
+          }
         }
+
+        function errorCallback(error) {
+          console.log("error happened:", error.message);
+        }
+
+          
+        }
+        
+        
+        
       });
     </script>
   </head>
   
   <body>
     <div id="viewDiv"></div>
-    <div id="tableDiv"></div>
+    <div
+      id="select-by-rectangle"
+      class="esri-widget esri-widget--button esri-widget esri-interactive"
+      title="Select features by rectangle"
+    >
+      <span class="esri-icon-checkbox-unchecked"></span>
+    </div>
+    <div
+      id="clear-selection"
+      class="esri-widget esri-widget--button esri-widget esri-interactive"
+      title="Clear selection"
+    >
+      <span class="esri-icon-erase"></span>
+    </div>
+    <div class="container">
+      <div id="tableDiv"></div>
+    </div>
     <button id="signInButton" style="display: none;">Sign In</button>
   </body>
 </html> 
