@@ -4,7 +4,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
       <title>ArcGIS Login and WebMap Filter Example</title>
-      <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
+      <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
       <style>
         html,
         body {
@@ -24,7 +24,7 @@
           width: 100%;
         }
       </style>
-      <script src="https://js.arcgis.com/4.25/"></script>
+      <script src="https://js.arcgis.com/4.26/"></script>
       <script>
         require([
           "esri/config",
@@ -113,49 +113,55 @@
               var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
               
             }
-            pandTable = new FeatureLayer({
-                url:(idTable)
-              })
+            const pandTable = new FeatureLayer({
+              url: idTable
+            });
+
             const featureTable = new FeatureTable({
               view: view, // Required for feature highlight to work
               layer: pandTable,
               //multiSortEnabled: true,
               //highlightOnRowSelectEnabled: true,
               visibleElements: {
-              // Autocast to VisibleElements
-              menuItems: {
-                clearSelection: true,
-                refreshData: true,
-                toggleColumns: true,
-                selectedRecordsShowAllToggle: true,
-                selectedRecordsShowSelectedToggle: true,
-                zoomToSelection: true
-              }
-              }, // hide the selection column since we are not working with a corresponding map
-              tableTemplate: { // autocastable to TableTemplate
-              // The table template's columnTemplates are used to determine which attributes are shown in the table
-                columnTemplates: [ // Array of either FieldColumnTemplates or GroupColumnTemplates
-                {
-                  type:"identificatie",
-                  name:"identificatie",
-                  label: "identificatie"
-                },
-                
-                { // autocastable to FieldColumnTemplate
-                  type: "field",
-                  name: "gm_naam",
-                  label: "gm_naam"
-                },
-                {
-                  type: "field",
-                  name: "Opmerkingen",
-                  label: "Opmerkingen",
-                  editable: true
+                // Autocast to VisibleElements
+                menuItems: {
+                  clearSelection: true,
+                  refreshData: true,
+                  toggleColumns: true,
+                  selectedRecordsShowAllToggle: true,
+                  selectedRecordsShowSelectedToggle: true,
+                  zoomToSelection: true
                 }
-              ]
+              },
+              // hide the selection column since we are not working with a corresponding map
+              tableSections: {
+                selectionColumn: false
+              },
+              table: { // autocastable to Table
+                columnHeadersVisible: true,
+                columns: [
+                  {
+                    field: "identificatie",
+                    label: "identificatie",
+                    sortable: true,
+                    width: "150px"
+                  },
+                  {
+                    field: "gm_naam",
+                    label: "gm_naam",
+                    sortable: true,
+                    width: "150px"
+                  },
+                  {
+                    field: "Opmerkingen",
+                    label: "Opmerkingen",
+                    sortable: false,
+                    width: "150px",
+                    editable: true
+                  }
+                ]
               },
               container: "tableDiv"
-
             });
 
             // Get the first layer in the web map and filter it based on the user's username
