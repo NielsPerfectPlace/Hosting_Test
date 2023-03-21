@@ -155,17 +155,15 @@
               container: "tableDiv"
 
             });
+            console.log(featureTable.highlightIds)
+
 
             // Get the first layer in the web map and filter it based on the user's username
             featureLayer = webmap.layers.getItemAt(0);
             featureLayer.definitionExpression = expression;
+            
           }
 
-        // Listen for changes in the collection of highlighted features
-        featureTable.highlightIds.on("change", (event) => {
-          console.log("features selected", event.added);
-          console.log("features deselected", event.removed);
-        });
         });
       </script>
     </head>
