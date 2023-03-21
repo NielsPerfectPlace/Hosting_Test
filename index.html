@@ -169,7 +169,7 @@
             featureLayer.definitionExpression = expression;
             // Listen for changes in the collection of highlighted features
             featureTable.highlightIds.on("change", (event) => {
-              const feature = item.feature.getAttribute('identificatie');
+              const feature = event.feature.getAttribute('identificatie');
               console.log(feature);
 
             });
