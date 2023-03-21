@@ -33,7 +33,8 @@
           "esri/layers/FeatureLayer",
           "esri/identity/OAuthInfo",
           "esri/identity/IdentityManager",
-          "esri/widgets/FeatureTable"
+          "esri/widgets/FeatureTable",
+          "esri/core/reactiveUtils"
 
         ], function (
           esriConfig,
@@ -42,8 +43,15 @@
           FeatureLayer,
           OAuthInfo,
           esriId,
-          FeatureTable
+          FeatureTable,
+          reactiveUtils
         ) {
+
+          let selectionIdCount = 0; // The filtered selection id count
+          let highlightIdsCount = 0; // The id count of all highlightIds
+          let candidate; // The graphic accessed via the view.click event
+
+
           // Set up the OAuth 2.0 authentication
           var info = new OAuthInfo({
             appId: "Ev2J6A53h3vOyiGZ",
@@ -114,10 +122,21 @@
                 url:(idTable)
               })
             const featureTable = new FeatureTable({
+              view: view, // Required for feature highlight to work
               layer: pandTable,
-              multiSortEnabled: true,
-              highlightOnRowSelectEnabled: true,
-              visibleElements: {selectionColumn: true}, // hide the selection column since we are not working with a corresponding map
+              //multiSortEnabled: true,
+              //highlightOnRowSelectEnabled: true,
+              isibleElements: {
+              // Autocast to VisibleElements
+              menuItems: {
+                clearSelection: true,
+                refreshData: true,
+                toggleColumns: true,
+                selectedRecordsShowAllToggle: true,
+                selectedRecordsShowSelectedToggle: true,
+                zoomToSelection: true
+              }
+              }, // hide the selection column since we are not working with a corresponding map
               tableTemplate: { // autocastable to TableTemplate
               // The table template's columnTemplates are used to determine which attributes are shown in the table
                 columnTemplates: [ // Array of either FieldColumnTemplates or GroupColumnTemplates
@@ -146,6 +165,28 @@
             // Get the first layer in the web map and filter it based on the user's username
             featureLayer = webmap.layers.getItemAt(0);
             featureLayer.definitionExpression = expression;
+
+            featureTable.watch("highlightIds.length", (ids) => {
+            highlightIdsCount = ids;
+
+            // Iterate through the filters within the table.
+            // If the active filter is "Show selection",
+            // changes made to highlightIds (adding/removing)
+            // are reflected.
+
+            featureTable.viewModel.activeFilters.forEach((filter) => {
+              if (filter.type === "selection") {
+                selectionIdCount = filter.objectIds.length; // the filtered selection's id count
+                // Check that the filter selection count is equal to the
+                // highlightIds collection count. If not, update filter selection.
+                if (selectionIdCount !== highlightIdsCount) {
+                  featureTable.filterBySelection();
+                }
+              }
+            });
+          });
+
+
           }
         });
       </script>
