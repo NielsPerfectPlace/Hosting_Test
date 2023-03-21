@@ -46,6 +46,10 @@
           FeatureTable,
           reactiveUtils
         ) {
+
+          let selectionIdCount = 0; // The filtered selection id count
+        let highlightIdsCount = 0; // The id count of all highlightIds
+        let candidate; // The graphic accessed via the view.click event
           // Set up the OAuth 2.0 authentication
           var info = new OAuthInfo({
             appId: "Ev2J6A53h3vOyiGZ",
@@ -156,17 +160,34 @@
 
             });
             //console.log(featureTable.highlightIds)
-            // Listen for changes in the collection of highlighted features
-            featureTable.highlightIds.on("change", (event) => {
-              console.log("features selected", event.added);
-              console.log("features deselected", event.removed);
+          // Watch the featureTable's highlightIds.length property,
+          // and get the count of highlighted features within
+          // the table.
+
+          featureTable.watch("highlightIds.length", (ids) => {
+            highlightIdsCount = ids;
+
+            // Iterate through the filters within the table.
+            // If the active filter is "Show selection",
+            // changes made to highlightIds (adding/removing)
+            // are reflected.
+
+            featureTable.viewModel.activeFilters.forEach((filter) => {
+              if (filter.type === "selection") {
+                selectionIdCount = filter.objectIds.length; // the filtered selection's id count
+                // Check that the filter selection count is equal to the
+                // highlightIds collection count. If not, update filter selection.
+                if (selectionIdCount !== highlightIdsCount) {
+                  featureTable.filterBySelection();
+                }
+              }
             });
 
             // Get the first layer in the web map and filter it based on the user's username
             featureLayer = webmap.layers.getItemAt(0);
             featureLayer.definitionExpression = expression;
             
-          }
+
 
         });
       </script>
