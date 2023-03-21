@@ -121,7 +121,7 @@
             const featureTable = new FeatureTable({
               view: view,
               layer: pandTable,
-              //multiSortEnabled: true,
+              multiSortEnabled: true,
               highlightEnabled: true,
               visibleElements: {
               // Autocast to VisibleElements
@@ -164,6 +164,26 @@
             // Get the first layer in the web map and filter it based on the user's username
             featureLayer = webmap.layers.getItemAt(0);
             featureLayer.definitionExpression = expression;
+
+            featureTable.watch("highlightIds.length", (ids) => {
+            highlightIdsCount = ids;
+
+            // Iterate through the filters within the table.
+            // If the active filter is "Show selection",
+            // changes made to highlightIds (adding/removing)
+            // are reflected.
+
+            featureTable.viewModel.activeFilters.forEach((filter) => {
+              if (filter.type === "selection") {
+                selectionIdCount = filter.objectIds.length; // the filtered selection's id count
+                // Check that the filter selection count is equal to the
+                // highlightIds collection count. If not, update filter selection.
+                if (selectionIdCount !== highlightIdsCount) {
+                  featureTable.filterBySelection();
+                }
+              }
+            });
+          });
             
           }
 
