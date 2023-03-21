@@ -118,7 +118,7 @@
             const featureTable = new FeatureTable({
               view: view,
               layer: pandTable,
-              //multiSortEnabled: true,
+              multiSortEnabled: true,
               highlightEnabled: true,
               visibleElements: {
               // Autocast to VisibleElements
@@ -155,8 +155,6 @@
               container: "tableDiv"
 
             });
-            console.log(featureTable.highlightIds)
-
 
             // Get the first layer in the web map and filter it based on the user's username
             featureLayer = webmap.layers.getItemAt(0);
