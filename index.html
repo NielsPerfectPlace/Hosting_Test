@@ -68,7 +68,7 @@
           });
         });
 
-        var webmap, view, featureLayer;
+        var webmap, view, featureLayer, pandTable;
 
         async function loadWebMap() {
           // Create a new web map
@@ -104,10 +104,41 @@
 
           if (username === "test_LB") {
             var expression = "gm_naam = 'Ede'";
-            var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer "
+            var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
+            pandTable = new FeatureLayer({
+              url:(idTable)
+            })
           }
-          
-          
+          const featureTable = new FeatureTable({
+            layer: pandTable,
+            multiSortEnabled: true,
+            highlightOnRowSelectEnabled: false,
+            visibleElements: {selectionColumn: false}, // hide the selection column since we are not working with a corresponding map
+            tableTemplate: { // autocastable to TableTemplate
+            // The table template's columnTemplates are used to determine which attributes are shown in the table
+              columnTemplates: [ // Array of either FieldColumnTemplates or GroupColumnTemplates
+              {
+                type:"identificatie",
+                name:"identificatie",
+                label: "identificatie"
+              },
+              
+              { // autocastable to FieldColumnTemplate
+                type: "field",
+                name: "gm_naam",
+                label: "gm_naam"
+              },
+              {
+                type: "field",
+                name: "Opmerkingen",
+                label: "Opmerkingen"
+              }
+            ]
+            },
+            container: "tableDiv"
+
+          });
+         
 
           // Get the first layer in the web map and filter it based on the user's username
           featureLayer = webmap.layers.getItemAt(0);
