@@ -167,7 +167,8 @@
             featureLayer.definitionExpression = expression;
 
             featureTable.watch("highlightIds.length", (ids) => {
-            highlightIdsCount = ids;
+                console.log(ids);
+                highlightIdsCount = ids;
 
             // Iterate through the filters within the table.
             // If the active filter is "Show selection",
