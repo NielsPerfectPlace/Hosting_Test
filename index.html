@@ -33,7 +33,8 @@
           "esri/layers/FeatureLayer",
           "esri/identity/OAuthInfo",
           "esri/identity/IdentityManager",
-          "esri/widgets/FeatureTable"
+          "esri/widgets/FeatureTable",
+          "esri/core/reactiveUtils"
 
         ], function (
           esriConfig,
@@ -42,7 +43,8 @@
           FeatureLayer,
           OAuthInfo,
           esriId,
-          FeatureTable
+          FeatureTable,
+          reactiveUtils
         ) {
           // Set up the OAuth 2.0 authentication
           var info = new OAuthInfo({
