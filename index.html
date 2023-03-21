@@ -105,7 +105,7 @@
             })();
           });
 
-          if (username === "niels_PerfectPlace") {
+          if (username === "test_LB") {
             var expression = "gm_naam = 'Ede'";
             var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
             pandTable = new FeatureLayer({
@@ -141,7 +141,8 @@
             container: "tableDiv"
 
           });
-         
+          view.ui.add(featureWidget, "bottom-right");
+
 
           // Get the first layer in the web map and filter it based on the user's username
           featureLayer = webmap.layers.getItemAt(0);
