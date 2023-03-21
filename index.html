@@ -4,7 +4,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
       <title>ArcGIS Login and WebMap Filter Example</title>
-      <link rel="stylesheet" href="https://js.arcgis.com/4.22/esri/themes/light/main.css">
+      <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
       <style>
         html,
         body {
@@ -24,7 +24,7 @@
           width: 100%;
         }
       </style>
-      <script src="https://js.arcgis.com/4.22/"></script>
+      <script src="https://js.arcgis.com/4.26/"></script>
       <script>
         require([
           "esri/config",
@@ -117,7 +117,17 @@
               layer: pandTable,
               multiSortEnabled: true,
               highlightOnRowSelectEnabled: true,
-              visibleElements: {selectionColumn: true}, // hide the selection column since we are not working with a corresponding map
+              visibleElements: {
+              // Autocast to VisibleElements
+              menuItems: {
+                clearSelection: true,
+                refreshData: true,
+                toggleColumns: true,
+                selectedRecordsShowAllToggle: true,
+                selectedRecordsShowSelectedToggle: true,
+                zoomToSelection: true
+              }
+            }, // hide the selection column since we are not working with a corresponding map
               tableTemplate: { // autocastable to TableTemplate
               // The table template's columnTemplates are used to determine which attributes are shown in the table
                 columnTemplates: [ // Array of either FieldColumnTemplates or GroupColumnTemplates
@@ -139,8 +149,7 @@
                 }
               ]
               },
-              container: "tableDiv",
-              highlightIds
+              container: "tableDiv"
 
             });
 
