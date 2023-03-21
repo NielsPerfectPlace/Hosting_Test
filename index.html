@@ -169,9 +169,12 @@
             featureLayer.definitionExpression = expression;
             // Listen for changes in the collection of highlighted features
             featureTable.highlightIds.on("change", (event) => {
-              const feature = event.feature.getAttribute('identificatie');
-              console.log(feature);
-
+              const selectedItems = featureTable.selectedItems;
+              const addedRows = event.added;
+              const addedObjectIds = addedRows.map(row => row.getObjectId());
+              const addedIdentificaties = selectedItems.map(item => item.data["identificatie"]);
+              console.log("Added rows ObjectIDs:", addedObjectIds);
+              console.log("Added rows identificaties:", addedIdentificaties);
             });
 
 
