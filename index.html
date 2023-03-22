@@ -1,193 +1,192 @@
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-      <title>ArcGIS Login and WebMap Filter Example</title>
-      <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
-      <style>
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          height: 100%;
-          width: 100%;
-        }
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>ArcGIS Login and WebMap Filter Example</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
+    <style>
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
 
-        #viewDiv {
-          height: 50%;
-          width: 100%;
-        }
+      #viewDiv {
+        height: 50%;
+        width: 100%;
+      }
 
-        #container {
-          height: 50vh;
-          width: 100%;
-        }
-      </style>
-      <script src="https://js.arcgis.com/4.25/"></script>
-      <script>
-        require([
-          "esri/config",
-          "esri/WebMap",
-          "esri/views/MapView",
-          "esri/layers/FeatureLayer",
-          "esri/identity/OAuthInfo",
-          "esri/identity/IdentityManager",
-          "esri/widgets/FeatureTable",
-          "esri/core/reactiveUtils"
+      #container {
+        height: 50vh;
+        width: 100%;
+      }
+    </style>
+    <script src="https://js.arcgis.com/4.25/"></script>
+    <script>
+      require([
+        "esri/config",
+        "esri/WebMap",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/identity/OAuthInfo",
+        "esri/identity/IdentityManager",
+        "esri/widgets/FeatureTable",
+        "esri/core/reactiveUtils"
 
-        ], function (
-          esriConfig,
-          WebMap,
-          MapView,
-          FeatureLayer,
-          OAuthInfo,
-          esriId,
-          FeatureTable,
-          reactiveUtils
-        ) {
+      ], function (
+        esriConfig,
+        WebMap,
+        MapView,
+        FeatureLayer,
+        OAuthInfo,
+        esriId,
+        FeatureTable,
+        reactiveUtils
+      ) {
 
-          // Set up the OAuth 2.0 authentication
-          var info = new OAuthInfo({
-            appId: "Ev2J6A53h3vOyiGZ",
-            popup: false
-          });
-          esriId.registerOAuthInfos([info]);
-
-          // Check if the user is already signed in
-          esriId.checkSignInStatus(info.portalUrl).then(
-            function () {
-              // User is signed in, load the web map
-              loadWebMap();
-            },
-            function () {
-              // User is not signed in, show the sign-in button
-              document.getElementById("signInButton").style.display = "block";
-            }
-          );
-
-          // Handle sign-in button click
-          document.getElementById("signInButton").addEventListener("click", function () {
-            esriId.getCredential(info.portalUrl).then(function () {
-              // User has signed in, load the web map
-              loadWebMap();
-            });
-          });
-
-          var webmap, view, featureLayer, featureTable, urlTable, pandTable;
-
-          async function loadWebMap() {
-            // Create a new web map
-            webmap = new WebMap({
-              portalItem: {
-                id: "ee5df0046625422989726e29ea171c83"
-              }
-            });
-
-            // Create a new map view and add it to the page
-            view = new MapView({
-              container: "viewDiv",
-              map: webmap
-            });
-
-            // Wait until the view is ready
-            await view.when();
-
-            // Get the user's username from the authentication credentials
-            var credential = await esriId.getCredential(info.portalUrl);
-            var username = credential.userId;
-
-            // Wait until the username is defined
-            await new Promise(resolve => {
-              (function waitForUsername() {
-                if (username) {
-                  resolve();
-                } else {
-                  setTimeout(waitForUsername, 100);
-                }
-              })();
-            });
-
-            if (username === "niels_PerfectPlace") {
-              var expression = "gm_naam = 'Ede'";
-              var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
-              
-            }
-            const pandTable = new FeatureLayer({
-              url: idTable
-            });
-
-            const featureTable = new FeatureTable({
-              view: view, // Required for feature highlight to work
-              layer: pandTable,
-              //multiSortEnabled: true,
-              //highlightOnRowSelectEnabled: true,
-              visibleElements: {
-                // Autocast to VisibleElements
-                menuItems: {
-                  clearSelection: true,
-                  refreshData: true,
-                  toggleColumns: true,
-                  selectedRecordsShowAllToggle: true,
-                  selectedRecordsShowSelectedToggle: true,
-                  zoomToSelection: true
-                }
-              },
-              // hide the selection column since we are not working with a corresponding map
-              tableSections: {
-                selectionColumn: false
-              },
-              table: { // autocastable to Table
-                columnHeadersVisible: true,
-                columns: [
-                  {
-                    field: "identificatie",
-                    label: "identificatie",
-                    sortable: true,
-                    width: "150px"
-                  },
-                  {
-                    field: "gm_naam",
-                    label: "gm_naam",
-                    sortable: true,
-                    width: "150px"
-                  },
-                  {
-                    field: "Opmerkingen",
-                    label: "Opmerkingen",
-                    sortable: false,
-                    width: "150px",
-                    editable: true
-                  }
-                ]
-              },
-              container: "tableDiv"
-            });
-
-            // Get the first layer in the web map and filter it based on the user's username
-            featureLayer = webmap.layers.getItemAt(0);
-            featureLayer.definitionExpression = expression;
-            // Listen for changes in the collection of highlighted features
-            featureTable.highlightIds.on("change", (event) => {
-              const selectedItems = featureTable.selectedItems;
-              const addedRows = event.added;
-              //const addedObjectIds = addedRows.map(row => row.getObjectId());
-              const addedIdentificaties = selectedItems.map(item => item.data["identificatie"]);
-              console.log("Added rows ObjectIDs:", addedObjectIds);
-              console.log("Added rows identificaties:", addedIdentificaties);
-            });
-
-
-          }
+        // Set up the OAuth 2.0 authentication
+        var info = new OAuthInfo({
+          appId: "Ev2J6A53h3vOyiGZ",
+          popup: false
         });
-      </script>
-    </head>
-    
-    <body>
-      <div id="viewDiv"></div>
-      <div id="container">
-        <div id="tableDiv"></div>
-      </div>
-      <button id="signInButton" style="display: none;">Sign In</button>
-    </body>
-  </html> 
+        esriId.registerOAuthInfos([info]);
+
+        // Check if the user is already signed in
+        esriId.checkSignInStatus(info.portalUrl).then(
+          function () {
+            // User is signed in, load the web map
+            loadWebMap();
+          },
+          function () {
+            // User is not signed in, show the sign-in button
+            document.getElementById("signInButton").style.display = "block";
+          }
+        );
+
+        // Handle sign-in button click
+        document.getElementById("signInButton").addEventListener("click", function () {
+          esriId.getCredential(info.portalUrl).then(function () {
+            // User has signed in, load the web map
+            loadWebMap();
+          });
+        });
+
+        var webmap, view, featureLayer, featureTable, urlTable, pandTable;
+
+        async function loadWebMap() {
+          // Create a new web map
+          webmap = new WebMap({
+            portalItem: {
+              id: "ee5df0046625422989726e29ea171c83"
+            }
+          });
+
+          // Create a new map view and add it to the page
+          view = new MapView({
+            container: "viewDiv",
+            map: webmap
+          });
+
+          // Wait until the view is ready
+          await view.when();
+
+          // Get the user's username from the authentication credentials
+          var credential = await esriId.getCredential(info.portalUrl);
+          var username = credential.userId;
+
+          // Wait until the username is defined
+          await new Promise(resolve => {
+            (function waitForUsername() {
+              if (username) {
+                resolve();
+              } else {
+                setTimeout(waitForUsername, 100);
+              }
+            })();
+          });
+
+          if (username === "niels_PerfectPlace") {
+            var expression = "gm_naam = 'Ede'";
+            var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
+            
+          }
+          const pandTable = new FeatureLayer({
+            url: idTable
+          });
+
+          const featureTable = new FeatureTable({
+            view: view, // Required for feature highlight to work
+            layer: pandTable,
+            //multiSortEnabled: true,
+            //highlightOnRowSelectEnabled: true,
+            visibleElements: {
+              // Autocast to VisibleElements
+              menuItems: {
+                clearSelection: true,
+                refreshData: true,
+                toggleColumns: true,
+                selectedRecordsShowAllToggle: true,
+                selectedRecordsShowSelectedToggle: true,
+                zoomToSelection: true
+              }
+            },
+            // hide the selection column since we are not working with a corresponding map
+            tableSections: {
+              selectionColumn: false
+            },
+            table: { // autocastable to Table
+              columnHeadersVisible: true,
+              columns: [
+                {
+                  field: "identificatie",
+                  label: "identificatie",
+                  sortable: true,
+                  width: "150px"
+                },
+                {
+                  field: "gm_naam",
+                  label: "gm_naam",
+                  sortable: true,
+                  width: "150px"
+                },
+                {
+                  field: "Opmerkingen",
+                  label: "Opmerkingen",
+                  sortable: false,
+                  width: "150px",
+                  editable: true
+                }
+              ]
+            },
+            container: "tableDiv"
+          });
+
+          // Get the first layer in the web map and filter it based on the user's username
+          let features = [];
+          featureLayer = webmap.layers.getItemAt(0);
+          featureLayer.definitionExpression = expression;
+          // Listen for changes in the collection of highlighted features
+          featureTable.highlightIds.on("change", (event) => {
+            Object.keys(featureTable.highlightIds).forEach((prop)=> console.log(prop));
+            const selectedItems = featureTable.selectedItems;
+            console.log(selectedItems)
+
+          });
+
+
+        }
+      });
+    </script>
+  </head>
+  
+  <body>
+    <div id="viewDiv"></div>
+    <div id="container">
+      <div id="tableDiv"></div>
+    </div>
+    <button id="signInButton" style="display: none;">Sign In</button>
+  </body>
+</html> 
