@@ -171,6 +171,7 @@
           // Listen for changes in the collection of highlighted features
           featureTable.highlightIds.on("change", (event) => {
             Object.keys(featureTable.highlightIds).forEach((prop)=> console.log(prop));
+            console.log(Object.getOwnPropertyNames(featureTable.highlightIds));
             const selectedItems = featureTable.selectedItems;
             //console.log(selectedItems)
 
