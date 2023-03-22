@@ -35,7 +35,8 @@
         "esri/identity/IdentityManager",
         "esri/widgets/FeatureTable",
         "esri/core/reactiveUtils",
-        "esri/layers/support/FeatureFilter"
+        "esri/layers/support/FeatureFilter",
+        "esri/support/actions/ActionButton"
       ], function (
         esriConfig,
         WebMap,
@@ -45,10 +46,11 @@
         esriId,
         FeatureTable,
         reactiveUtils,
-         FeatureFilter
+         FeatureFilter,
+         ActionButton
          
       ) {
-        console.log("test 6")
+        console.log("test 7")
 
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -177,7 +179,7 @@
             where: expression
           });
 
-          featureTable.highlightIds.on('selection-change', (event) => {
+          featureTable.highlightIds.on('change', (event) => {
             if (event.added.length > 0) {
               filterArray.push(event.added[0].feature.attributes['identificatie']);
             }
@@ -198,6 +200,22 @@
 
 
         }
+
+        var zoomButton = new ActionButton({
+        title: "Zoom to First Feature Layer",
+        id: "zoom-to-first-feature-layer",
+        className: "esri-icon-zoom-in-magnifying-glass",
+        // This function will be called when the button is clicked
+        // and will zoom to the extent of the first feature layer in the map
+        action: function() {
+          view.whenLayerView(map.layers.getItemAt(0)).then(function(layerView) {
+            layerView.queryExtent().then(function(response) {
+              view.goTo(response.extent);
+            });
+          });
+        }
+      });
+      view.ui.add(zoomButton, "top-right");
         
       });
     </script>
