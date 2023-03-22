@@ -168,14 +168,12 @@
           let features = [];
           featureLayer = webmap.layers.getItemAt(0);
           featureLayer.definitionExpression = expression;
-          // Listen for changes in the collection of highlighted features
           featureTable.on("selection-change", function(event) {
-            var selectedRows = featureTable.getSelectedRows();
-            selectedRows.forEach(function(row) {
-              var rowData = featureTable.getRowData(row);
-              console.log(rowData);
+              var selectedRows = featureTable.getSelectedRows();
+              selectedRows.forEach(function(row) {
+                console.log(row);
+              });
             });
-          });
 
 
         }
