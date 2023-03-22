@@ -173,7 +173,7 @@
           featureLayer.definitionExpression = expression;
           // Listen for changes in the collection of highlighted features
           const featureFilter = new FeatureFilter({
-            where: '1=1'
+            where: expression
           });
 
           featureTable.on('selection-change', (event) => {
@@ -189,7 +189,7 @@
             if (filterArray.length > 0) {
               featureFilter.where = `identificatie IN (${filterArray.map(value => `'${value}'`).join(',')})`;
             } else {
-              featureFilter.where = '1=1';
+              featureFilter.where = expression;
             }
             featureLayer.definitionExpression = featureFilter.where;
           });
