@@ -48,7 +48,6 @@
         reactiveUtils,
          FeatureFilter
       ) {
-        console.log("Test 1")
 
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -194,10 +193,10 @@
             }
             featureLayer.definitionExpression = featureFilter.where;
           });
-          featureLayer.definitionExpression.on('change', (event) => {
-            console.log(featureLayer.queryExtent().extent);
-            view.goTo(featureLayer.queryExtent().extent);
-          });
+          //featureLayer.definitionExpression.on('change', (event) => {
+          //  console.log(featureLayer.queryExtent().extent);
+          //  view.goTo(featureLayer.queryExtent().extent);
+          //});
 
 
         }
