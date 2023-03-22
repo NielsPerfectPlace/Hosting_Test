@@ -35,9 +35,7 @@
         "esri/identity/IdentityManager",
         "esri/widgets/FeatureTable",
         "esri/core/reactiveUtils",
-        "esri/layers/support/FeatureFilter",
-        "esri/widgets/Button"
-
+        "esri/layers/support/FeatureFilter"
       ], function (
         esriConfig,
         WebMap,
@@ -47,10 +45,10 @@
         esriId,
         FeatureTable,
         reactiveUtils,
-         FeatureFilter,
-         Button
+         FeatureFilter
+         
       ) {
-        console.log("test 5")
+        console.log("test 6")
 
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -200,17 +198,7 @@
 
 
         }
-        var zoomButton = new Button({
-            label: "Zoom to First Feature Layer",
-            onClick: function() {
-              view.whenLayerView(map.layers.getItemAt(0)).then(function(layerView) {
-                layerView.queryExtent().then(function(response) {
-                  view.goTo(response.extent);
-                });
-              });
-            }
-          });
-          view.ui.add(zoomButton, "top-right");
+        
       });
     </script>
   </head>
