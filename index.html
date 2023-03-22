@@ -34,8 +34,7 @@
         "esri/identity/OAuthInfo",
         "esri/identity/IdentityManager",
         "esri/widgets/FeatureTable",
-        "esri/core/reactiveUtils",
-        "esri/layers/support/FeatureFilter"
+        "esri/core/reactiveUtils"
 
       ], function (
         esriConfig,
@@ -45,8 +44,7 @@
         OAuthInfo,
         esriId,
         FeatureTable,
-        reactiveUtils,
-         FeatureFilter
+        reactiveUtils
       ) {
 
         // Set up the OAuth 2.0 authentication
@@ -181,9 +179,10 @@
               const i = filterArray.indexOf(event.removed[0].feature.attributes[valueString]);
               filterArray.splice(i, 1);
             } else if (event.removed.length > 0) {
+              featureLayer.definitionExpression = null;
               filterArray = [];
             }
-    });
+        });
 
 
         }
