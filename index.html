@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>ArcGIS Login and WebMap Filter Example</title>
-    <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
     <style>
       html,
       body {
@@ -24,7 +24,7 @@
         width: 100%;
       }
     </style>
-    <script src="https://js.arcgis.com/4.25/"></script>
+    <script src="https://js.arcgis.com/4.26/"></script>
     <script>
       require([
         "esri/config",
@@ -169,17 +169,13 @@
           featureLayer = webmap.layers.getItemAt(0);
           featureLayer.definitionExpression = expression;
           // Listen for changes in the collection of highlighted features
-          featureTable.highlightIds.on("change", (event) => {
-          const props = new Set();
-          
-          featureTable.highlightIds.forEach(function(item, i){
-            Object.keys(item.attributes).forEach((prop) => {
-              props.add(prop);
+          featureTable.on("selection-change", function(event) {
+            var selectedRows = featureTable.getSelectedRows();
+            selectedRows.forEach(function(row) {
+              var rowData = featureTable.getRowData(row);
+              console.log(rowData);
             });
           });
-
-          console.log("Possible attributes:", Array.from(props));
-        });
 
 
         }
