@@ -170,7 +170,7 @@
           featureLayer.definitionExpression = expression;
           // Listen for changes in the collection of highlighted features
           featureTable.highlightIds.on("change", (event) => {
-            Object.keys(featureTable.highlightIds).forEach((prop)=> console.log(prop));
+            Object.keys(featureTable.highlightIds.items).forEach((prop)=> console.log(prop));
             const selectedItems = featureTable.selectedItems;
             console.log(selectedItems)
 
