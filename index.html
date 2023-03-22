@@ -48,7 +48,7 @@
         reactiveUtils,
          FeatureFilter
       ) {
-        console.log("TEST 2")
+        console.log("test 3")
 
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -177,7 +177,7 @@
             where: expression
           });
 
-          featureTable.highlightIds.on("change", (event) => {
+          featureTable.on('selection-change', (event) => {
             if (event.added.length > 0) {
               filterArray.push(event.added[0].feature.attributes['identificatie']);
             }
@@ -194,10 +194,7 @@
             }
             featureLayer.definitionExpression = featureFilter.where;
           });
-          //featureLayer.definitionExpression.on('change', (event) => {
-          //  console.log(featureLayer.queryExtent().extent);
-          //  view.goTo(featureLayer.queryExtent().extent);
-          //});
+
 
 
         }
