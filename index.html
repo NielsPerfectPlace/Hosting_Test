@@ -165,15 +165,20 @@
           });
 
           // Get the first layer in the web map and filter it based on the user's username
-          let features = [];
+          let filterArray = [];
           featureLayer = webmap.layers.getItemAt(0);
           featureLayer.definitionExpression = expression;
-          featureTable.on("selection-change", function(event) {
-              var selectedRows = featureTable.getSelectedRows();
-              selectedRows.forEach(function(row) {
-                console.log(row);
-              });
-            });
+          // Listen for changes in the collection of highlighted features
+          featureTable.on('selection-change', (event) => {
+            if (event.added.length > 0) filterArray.push(event.added[0].feature.attributes['identificatie']);
+            console.log(filterArray);
+            if (event.removed.length === 1) {
+              const i = filterArray.indexOf(event.removed[0].feature.attributes[valueString]);
+              filterArray.splice(i, 1);
+            } else if (event.removed.length > 0) {
+              filterArray = [];
+            }
+    });
 
 
         }
