@@ -170,16 +170,16 @@
           featureLayer.definitionExpression = expression;
           // Listen for changes in the collection of highlighted features
           featureTable.highlightIds.on("change", (event) => {
-            //Object.keys(featureTable.highlightIds).forEach((prop)=> console.log(prop));
-            //console.log(Object.getOwnPropertyNames(featureTable.highlightIds));
-            
-            featureTable.highlightIds.forEach(function(item, i){
-              console.log(`State: ${item.attributes}`);
+          const props = new Set();
+          
+          featureTable.highlightIds.forEach(function(item, i){
+            Object.keys(item.attributes).forEach((prop) => {
+              props.add(prop);
             });
-
-            
-                     
           });
+
+          console.log("Possible attributes:", Array.from(props));
+        });
 
 
         }
