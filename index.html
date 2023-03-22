@@ -177,7 +177,7 @@
             where: expression
           });
 
-          featureTable.on('selection-change', (event) => {
+          featureTable.highlightIds.on('selection-change', (event) => {
             if (event.added.length > 0) {
               filterArray.push(event.added[0].feature.attributes['identificatie']);
             }
