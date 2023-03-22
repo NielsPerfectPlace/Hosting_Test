@@ -171,7 +171,10 @@
           // Listen for changes in the collection of highlighted features
           featureTable.on('selection-change', (event) => {
             if (event.added.length > 0) filterArray.push(event.added[0].feature.attributes['identificatie']);
-            console.log(filterArray);
+            const featureFilter = new FeatureFilter({
+              where: `identificatie IN (${filterArray.map(value => `'${value}'`).join(',')})`
+            });
+            featureLayer.definitionExpression = featureFilter.where;
             if (event.removed.length === 1) {
               const i = filterArray.indexOf(event.removed[0].feature.attributes[valueString]);
               filterArray.splice(i, 1);
