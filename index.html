@@ -119,6 +119,7 @@
             url: idTable
           });
 
+
           const featureTable = new FeatureTable({
             view: view, // Required for feature highlight to work
             layer: pandTable,
@@ -191,6 +192,15 @@
               featureFilter.where = '1=1';
             }
             featureLayer.definitionExpression = featureFilter.where;
+          });
+
+          featureTable.on('zoom-to-selection', async () => {
+            const featureLayerView = await view.whenLayerView(featureLayer);
+            const filteredFeatures = await featureLayerView.queryFeatures({ where: featureLayerView.filter.where });
+            if (filteredFeatures.features.length > 0) {
+              const filteredFeaturesExtent = geometryEngine.union(filteredFeatures.features.map(feature => feature.geometry));
+              view.goTo(filteredFeaturesExtent);
+            }
           });
 
 
