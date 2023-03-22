@@ -176,7 +176,7 @@
             where: expression
           });
 
-          featureTable.on('selection-change', (event) => {
+          featureTable.highlightIds.on("change", (event) => {
             if (event.added.length > 0) {
               filterArray.push(event.added[0].feature.attributes['identificatie']);
             }
@@ -193,11 +193,9 @@
             }
             featureLayer.definitionExpression = featureFilter.where;
           });
-          featureTable.on('zoom-to-selection', async () => {
-            const featureLayerView = await view.whenLayerView(featureLayer);
-            const featureLayerExtent = await featureLayerView.queryExtent();
-            console.log('Feature layer extent:', featureLayerExtent);
-            view.goTo(featureLayerExtent);
+          featureLayer.definitionExpression.on('change', (event) => {
+            console.log(featureLayer.queryExtent().extent);
+            view.goTo(featureLayer.queryExtent().extent);
           });
 
 
