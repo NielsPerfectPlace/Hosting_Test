@@ -172,8 +172,13 @@
           featureTable.highlightIds.on("change", (event) => {
             Object.keys(featureTable.highlightIds).forEach((prop)=> console.log(prop));
             console.log(Object.getOwnPropertyNames(featureTable.highlightIds));
-            const selectedItems = featureTable.selectedItems;
-            //console.log(selectedItems)
+            console.log(featureTable.highlightIds.foreach
+                        
+            featureTable.highlightIds.forEach(function(item, i){
+              console.log(item.identificatie);
+            });
+                        
+            console.log(featureTable.highlightIds.get("identificatie"))
 
           });
 
