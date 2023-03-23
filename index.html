@@ -50,7 +50,7 @@
          ActionButton
          
       ) {
-        console.log("test 8")
+        console.log("test 12")
 
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -212,13 +212,12 @@
           view.popup.on("trigger-action", function(event) {
             if (event.action.id === "zoom-to-selected-features") {
               // get the selected features            
-              if (featureLayer) {
                 // calculate the extent of the selected features
                 let extent = featureLayer.geometry.extent;
                 
                 // go to the calculated extent
                 view.goTo(extent);
-              }
+              
             }
           });
           
@@ -227,13 +226,12 @@
         button.innerHTML = "Zoom to selected features";
         button.addEventListener("click", function() {
           // get the selected features          
-          if (featureLayer) {
             // calculate the extent of the selected features
             let extent = featureLayer.geometry.extent;
             
             // go to the calculated extent
             view.goTo(extent);
-          }
+          
         });
         
         view.ui.add(button, "top-right");
