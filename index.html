@@ -197,22 +197,36 @@
             featureLayer.definitionExpression = featureFilter.where;
           });
 
-          var zoomButton = new ActionButton({
-            title: "Zoom to First Feature Layer",
-            id: "zoom-to-first-feature-layer",
-            className: "esri-icon-zoom-in-magnifying-glass",
-            // This function will be called when the button is clicked
-            // and will zoom to the extent of the first feature layer in the map
-            action: function() {
-              view.whenLayerView(map.layers.getItemAt(0)).then(function(layerView) {
-                layerView.queryExtent().then(function(response) {
-                  view.goTo(response.extent);
-                });
+          view.when(function() {
+          // create a custom action
+          const zoomToAction = {
+            title: "Zoom to layer",
+            id: "zoom-to-layer",
+            className: "esri-icon-zoom-in-magnifying-glass"
+          };
+
+          // add the custom action to the view's default popup
+          view.popup.actions.push(zoomToAction);
+
+          // execute the custom action
+          view.popup.on("trigger-action", function(event) {
+            if (event.action.id === "zoom-to-layer") {
+              featureLayer.queryExtent().then(function(response) {
+                view.goTo(response.extent);
               });
             }
           });
-          var zoomButtonNode = zoomButton.container;
-          view.ui.add(zoomButtonNode, "top-right");
+          
+        // create a button to trigger the custom action
+        const button = document.createElement("button");
+        button.innerHTML = "Zoom to layer";
+        button.addEventListener("click", function() {
+          featureLayer.queryExtent().then(function(response) {
+            view.goTo(response.extent);
+          });
+        });
+        
+        view.ui.add(button, "top-right");
 
 
 
