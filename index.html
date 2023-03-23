@@ -37,7 +37,6 @@
         "esri/core/reactiveUtils",
         "esri/layers/support/FeatureFilter",
         "esri/support/actions/ActionButton",
-        "esri/widgets/Widget",
         "esri/views/draw/Draw",
         "esri/Graphic",
         "esri/geometry/geometryEngine"
@@ -52,9 +51,8 @@
         reactiveUtils,
         FeatureFilter,
         ActionButton, 
-        Widget,
-         Draw, 
-        raphic, 
+        Draw, 
+        Graphic, 
         geometryEngine
          
       ) {
@@ -242,9 +240,9 @@
 
         ////////////////////////
 
-        class CustomWidget extends Widget { // change this line
+        class CustomWidget { // change this line
     constructor(params) {
-      super(params);
+      this.view = params.view;
       
       this.draw = new Draw({
         view: this.view
