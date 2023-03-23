@@ -50,7 +50,7 @@
          ActionButton
          
       ) {
-        console.log("test 12")
+        console.log("test 8")
 
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -79,7 +79,7 @@
           });
         });
 
-        var webmap, view, featureLayer, featureTable, urlTable, pandTable;
+        var webmap, view, featureLayer, featureTable, urlTable, pandTable,extent;
 
         async function loadWebMap() {
           // Create a new web map
@@ -173,6 +173,7 @@
           // Get the first layer in the web map and filter it based on the user's username
           let filterArray = [];
           featureLayer = webmap.layers.getItemAt(0);
+          extent = featureLayer.geometry.extent
           featureLayer.definitionExpression = expression;
           // Listen for changes in the collection of highlighted features
           const featureFilter = new FeatureFilter({
@@ -195,6 +196,7 @@
               featureFilter.where = expression;
             }
             featureLayer.definitionExpression = featureFilter.where;
+            extent = featureLayer.geometry.extent
           });
 
           view.when(function() {
@@ -226,10 +228,7 @@
         button.innerHTML = "Zoom to selected features";
         button.addEventListener("click", function() {
           // get the selected features          
-            // calculate the extent of the selected features
-            let extent = featureLayer.geometry.extent;
-            
-            // go to the calculated extent
+
             view.goTo(extent);
           
         });
