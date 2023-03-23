@@ -211,7 +211,7 @@
           // execute the custom action
           view.popup.on("trigger-action", function(event) {
             if (event.action.id === "zoom-to-layer") {
-              featureLayer.queryExtent().then(function(response) {
+              layer.queryExtent().then(function(response) {
                 view.goTo(response.extent);
               });
             }
@@ -221,7 +221,7 @@
         const button = document.createElement("button");
         button.innerHTML = "Zoom to layer";
         button.addEventListener("click", function() {
-          featureLayer.queryExtent().then(function(response) {
+          layer.queryExtent().then(function(response) {
             view.goTo(response.extent);
           });
         });
@@ -230,7 +230,8 @@
 
 
 
-        }
+        });
+      }
         
         
       });
