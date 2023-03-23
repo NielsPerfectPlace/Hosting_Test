@@ -58,7 +58,7 @@
         geometryEngine
          
       ) {
-        console.log("test ewrq")
+        console.log("test 8")
 
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -243,82 +243,84 @@
         ////////////////////////
 
         const CustomWidget = Widget.createSubclass({
-          postCreate: function() {
-            this.draw = new Draw({
-              view: this.view
-            });
-            
-            this.container = document.createElement("div");
-            const button = document.createElement("button");
-            button.innerHTML = "Select features";
-            button.addEventListener("click", () => {
-              this._drawBox();
-            });
-            
-            this.container.appendChild(button);
-          },
-          
-          render: function() {
-            return this.container;
-          },
-          
-          _drawBox: function() {
-            const action = this.draw.create("rectangle");
-            
-            action.on("draw-complete", (event) => {
-              const graphic = new Graphic({
-                geometry: event.geometry,
-                symbol: {
-                  type: "simple-fill",
-                  color: [0, 0, 0, 0.1],
-                  outline: {
-                    color: [0, 0, 255],
-                    width: 2
-                  }
-                }
-              });
-              
-              this.view.graphics.add(graphic);
-              
-              // query for features that intersect with the drawn box
-              featureLayer.queryFeatures({
-                geometry: event.geometry,
-                spatialRelationship: "intersects"
-              }).then((response) => {
-                // highlight the selected features
-                response.features.forEach((feature) => { // change this line
-                  featureLayer.highlight(feature);
-                  
-                  // add feature's identificatie value to filter array
-                  filterArray.push(feature.attributes['identificatie']);
-                });
-                
-                // update definitionExpression of featureLayer and featureTable
-                if (filterArray.length > 0) {
-                  featureFilter.where = `identificatie IN (${filterArray.map(value => `'${value}'`).join(',')})`;
-                } else {
-                  featureFilter.where = expression;
-                }
-                
-                featureLayer.definitionExpression = featureFilter.where;
-                
-                // update definitionExpression of featureTable if it exists
-                if (featureTable) {
-                  featureTable.definitionExpression = featureFilter.where;
-                }
-              }).catch((error) => { // add error handling here
-                console.error(error);
-              });
-            });
+    postCreate: function() {
+      this.draw = new Draw({
+        view: this.view
+      });
+      
+      this.container = document.createElement("div");
+      const button = document.createElement("button");
+      button.innerHTML = "Select features";
+      button.addEventListener("click", () => {
+        this._drawBox();
+      });
+      
+      this.container.appendChild(button);
+    },
+    
+    render: function() {
+      return this.container;
+    },
+    
+    _drawBox: function() {
+      const action = this.draw.create("rectangle");
+      
+      action.on("draw-complete", (event) => {
+        const graphic = new Graphic({
+          geometry: event.geometry,
+          symbol: {
+            type: "simple-fill",
+            color: [0, 0, 0, 0.1],
+            outline: {
+              color: [0, 0, 255],
+              width: 2
+            }
           }
         });
         
-        const customWidget = new CustomWidget({
-          view: view,
-          container: document.createElement("div")
-        });
+        this.view.graphics.add(graphic);
         
-        view.ui.add(customWidget.container, "top-right");
+        // query for features that intersect with the drawn box
+        featureLayer.queryFeatures({
+          geometry: event.geometry,
+          spatialRelationship: "intersects"
+        }).then((response) => {
+          // highlight the selected features
+          for (let i = 0; i < response.features.length; i++) { // change this line
+            const feature = response.features[i]; // change this line
+            
+            featureLayer.highlight(feature);
+            
+            // add feature's identificatie value to filter array
+            filterArray.push(feature.attributes['identificatie']);
+          }
+          
+          // update definitionExpression of featureLayer and featureTable
+          if (filterArray.length > 0) {
+            featureFilter.where = `identificatie IN (${filterArray.map(value => `'${value}'`).join(',')})`;
+          } else {
+            featureFilter.where = expression;
+          }
+          
+          featureLayer.definitionExpression = featureFilter.where;
+          
+          // update definitionExpression of featureTable if it exists
+          if (featureTable) {
+            featureTable.definitionExpression = featureFilter.where;
+          }
+        }).catch((error) => { // add error handling here
+           console.error(error);
+         });
+      });
+    }
+  });
+  
+  const customWidget = new CustomWidget({
+    view: view,
+    container: document.createElement("div")
+  });
+  
+  view.ui.add(customWidget.container, "top-right");
 
   //////////////////////////////
 
