@@ -173,7 +173,6 @@
           // Get the first layer in the web map and filter it based on the user's username
           let filterArray = [];
           featureLayer = webmap.layers.getItemAt(0);
-          extent = featureLayer.geometry.extent
           featureLayer.definitionExpression = expression;
           // Listen for changes in the collection of highlighted features
           const featureFilter = new FeatureFilter({
