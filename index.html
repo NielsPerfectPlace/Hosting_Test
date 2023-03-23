@@ -79,7 +79,7 @@
           });
         });
 
-        var webmap, view, featureLayer, featureTable, urlTable, pandTable,extent;
+        var webmap, view, featureLayer, featureTable, urlTable, pandTable;
 
         async function loadWebMap() {
           // Create a new web map
@@ -195,7 +195,7 @@
               featureFilter.where = expression;
             }
             featureLayer.definitionExpression = featureFilter.where;
-            extent = featureLayer.geometry.extent
+            
           });
 
           view.when(function() {
@@ -208,17 +208,16 @@
 
           // add the custom action to the view's default popup
           view.popup.actions.push(zoomToAction);
-
-          // execute the custom action
           view.popup.on("trigger-action", function(event) {
             if (event.action.id === "zoom-to-selected-features") {
               // get the selected features            
+              if (featureLayer) {
                 // calculate the extent of the selected features
-                let extent = featureLayer.geometry.extent;
-                
-                // go to the calculated extent
-                view.goTo(extent);
-              
+                featureLayer.queryExtent().then(function(response) {
+                  // go to the calculated extent
+                  view.goTo(response.extent);
+                });
+              }
             }
           });
           
@@ -226,10 +225,9 @@
         const button = document.createElement("button");
         button.innerHTML = "Zoom to selected features";
         button.addEventListener("click", function() {
-          // get the selected features          
-
-            view.goTo(extent);
-          
+          featureLayer.queryExtent().then(function(response) {
+            view.goTo(response.extent);
+          });
         });
         
         view.ui.add(button, "top-right");
