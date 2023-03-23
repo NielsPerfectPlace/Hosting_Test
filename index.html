@@ -58,7 +58,7 @@
         geometryEngine
          
       ) {
-        console.log("test 8")
+        console.log("test wea")
 
         // Set up the OAuth 2.0 authentication
         var info = new OAuthInfo({
@@ -242,8 +242,10 @@
 
         ////////////////////////
 
-        const CustomWidget = Widget.createSubclass({
-    postCreate: function() {
+        class CustomWidget extends Widget { // change this line
+    constructor(params) {
+      super(params);
+      
       this.draw = new Draw({
         view: this.view
       });
@@ -256,13 +258,13 @@
       });
       
       this.container.appendChild(button);
-    },
+    }
     
-    render: function() {
+    render() { // change this line
       return this.container;
-    },
+    }
     
-    _drawBox: function() {
+    _drawBox() { // change this line
       const action = this.draw.create("rectangle");
       
       action.on("draw-complete", (event) => {
@@ -286,8 +288,8 @@
           spatialRelationship: "intersects"
         }).then((response) => {
           // highlight the selected features
-          for (let i = 0; i < response.features.length; i++) { // change this line
-            const feature = response.features[i]; // change this line
+          for (let i = 0; i < response.features.length; i++) {
+            const feature = response.features[i];
             
             featureLayer.highlight(feature);
             
@@ -313,14 +315,15 @@
          });
       });
     }
-  });
+  };
   
-  const customWidget = new CustomWidget({
+  const customWidget = new CustomWidget({ // change this line
     view: view,
     container: document.createElement("div")
   });
   
   view.ui.add(customWidget.container, "top-right");
+});
 
   //////////////////////////////
 
