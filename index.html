@@ -256,11 +256,13 @@
      event.stopPropagation();
      
      if (!action) {
+      console.log("Drawing")
        action = draw.create("rectangle");
        action.on("draw-complete", drawPolygon);
      }
      
      if (event.action === "end") {
+      console.log("Action done")
        action.complete();
        action = null;
      }
