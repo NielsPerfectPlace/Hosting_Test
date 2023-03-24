@@ -272,11 +272,13 @@ function drawPolygon(event) {
         view.graphics.removeAll();
         const graphic = createGraphic(vertices);
         view.graphics.add(graphic);
+        console.log(graphics);
         
         featureLayer.queryFeatures({
           geometry: graphic.geometry,
           spatialRelationship: "intersects"
         }).then(function(results){
+          console.log(results)
           let identificatieValues = [];
           results.features.forEach(function(feature){
             identificatieValues.push(feature.attributes.identificatie);
