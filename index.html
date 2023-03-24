@@ -121,6 +121,9 @@
             var idTable = "https://services9.arcgis.com/e2SbRUv3uVfnVzwG/arcgis/rest/services/ede_table/FeatureServer"
             
           }
+          else {
+            var expression = "gm_naan = 'Nieuw Lutjebroekland'"
+          }
           const pandTable = new FeatureLayer({
             url: idTable
           });
@@ -246,72 +249,75 @@
   });
 
           
-// create() returns a reference to an instance of PolygonDrawAction
-const action = draw.create("rectangle");
+  let draw = new Draw({
+     view: view
+   });
 
-// focus the view to activate keyboard shortcuts for drawing polygons
-view.focus();
+   let action = null;
 
-// listen to vertex-add event on the action
-action.on("vertex-add", drawPolygon);
-
-// listen to cursor-update event on the action
-action.on("cursor-update", drawPolygon);
-
-// listen to vertex-remove event on the action
-action.on("vertex-remove", drawPolygon);
-
-// listen to draw-complete event on the action
-action.on("draw-complete", drawPolygon);
-
+   // listen for shift + click event on the view
+   view.on("click", ["Shift"], function(event) {
+     event.stopPropagation();
+     
+     if (!action) {
+       action = draw.create("rectangle");
+       action.on("draw-complete", drawPolygon);
+     }
+     
+     if (event.action === "end") {
+       action.complete();
+       action = null;
+     }
+     
+   });
+   
 function drawPolygon(event) {
-     const vertices = event.vertices;
-     view.graphics.removeAll();
-     const graphic = createGraphic(vertices);
-     view.graphics.add(graphic);
-     
-     featureLayer.queryFeatures({
-       geometry: graphic.geometry,
-       spatialRelationship: "intersects"
-     }).then(function(results){
-       let identificatieValues = [];
-       results.features.forEach(function(feature){
-        console.log(identificatieValues)
-         identificatieValues.push(feature.attributes.identificatie);
-         feature.symbol = {
-           type: "simple-marker",
-           color: [255,255,0],
-           outline: {
-             width: 3,
-             color: [255,0,0]
-           }
-         };
-       });
-       
-       featureTable.highlightedIds = identificatieValues;
-     });
-   }
+        const vertices = event.vertices;
+        view.graphics.removeAll();
+        const graphic = createGraphic(vertices);
+        view.graphics.add(graphic);
+        
+        featureLayer.queryFeatures({
+          geometry: graphic.geometry,
+          spatialRelationship: "intersects"
+        }).then(function(results){
+          let identificatieValues = [];
+          results.features.forEach(function(feature){
+            identificatieValues.push(feature.attributes.identificatie);
+            feature.symbol = {
+              type: "simple-marker",
+              color: [255,255,0],
+              outline: {
+                width: 3,
+                color: [255,0,0]
+              }
+            };
+          });
+          
+          featureTable.highlightedIds = identificatieValues;
+        });
+      }
 
-   function createGraphic(vertices) {
-     const polygon = {
-       type: "polygon",
-       rings: vertices,
-       spatialReference: view.spatialReference
-     };
-     
-     return new Graphic({
-       geometry:polygon,
-       symbol:{
-         type:"simple-fill",
-         color:[178,102,234,.25],
-         style:"solid",
-         outline:{
-           color:[178,102,234],
-           width:.5
-         }
-       }
-     });
-   }
+      function createGraphic(vertices) {
+        const polygon = {
+          type: "polygon",
+          rings: vertices,
+          spatialReference: view.spatialReference
+        };
+        
+        return new Graphic({
+          geometry:polygon,
+          symbol:{
+            type:"simple-fill",
+            color:[178,102,234,.25],
+            style:"solid",
+            outline:{
+              color:[178,102,234],
+              width:.5
+            }
+          }
+        });
+      }
         
       
       }
