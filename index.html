@@ -241,73 +241,71 @@
 
         });
           
-var draw = new Draw({
-    view: view
-  });
+// create() returns a reference to an instance of PolygonDrawAction
+const action = draw.create("rectangle");
 
-   // create() returns a reference to an instance of PolygonDrawAction
-   const action = draw.create("rectangle");
+// focus the view to activate keyboard shortcuts for drawing polygons
+view.focus();
 
-   // focus the view to activate keyboard shortcuts for drawing polygons
-   view.focus();
+// listen to vertex-add event on the action
+action.on("vertex-add", drawPolygon);
 
-   // listen to vertex-add event on the action
-   action.on("vertex-add", drawPolygon);
-   
-   // listen to cursor-update event on the action
-   action.on("cursor-update", drawPolygon);
-   
-   // listen to vertex-remove event on the action
-   action.on("vertex-remove", drawPolygon);
-   
-   // listen to draw-complete event on the action
-   action.on("draw-complete", drawPolygon);
+// listen to cursor-update event on the action
+action.on("cursor-update", drawPolygon);
+
+// listen to vertex-remove event on the action
+action.on("vertex-remove", drawPolygon);
+
+// listen to draw-complete event on the action
+action.on("draw-complete", drawPolygon);
 
 function drawPolygon(event) {
-        const vertices = event.vertices;
-        view.graphics.removeAll();
-        const graphic = createGraphic(vertices);
-        view.graphics.add(graphic);
+     const vertices = event.vertices;
+     view.graphics.removeAll();
+     const graphic = createGraphic(vertices);
+     view.graphics.add(graphic);
+     
+     featureLayer.queryFeatures({
+       geometry: graphic.geometry,
+       spatialRelationship: "intersects"
+     }).then(function(results){
+       let identificatieValues = [];
+       results.features.forEach(function(feature){
+         identificatieValues.push(feature.attributes.identificatie);
+         feature.symbol = {
+           type: "simple-marker",
+           color: [255,255,0],
+           outline: {
+             width: 3,
+             color: [255,0,0]
+           }
+         };
+       });
+       
+       featureTable.highlightedIds = identificatieValues;
+     });
+   }
 
-        if(featureLayer){
-        
-        featureLayer.queryFeatures({
-          geometry: graphic.geometry,
-          spatialRelationship: "intersects"
-        }).then(function(results){
-          results.features.forEach(function(feature){
-            feature.symbol = {
-              type: "simple-marker",
-              color: [255,255,0],
-              outline: {
-                width: 3,
-                color: [255,0,0]
-              }
-            };
-          });
-        });}
-      }
-
-      function createGraphic(vertices) {
-        const polygon = {
-          type: "polygon",
-          rings: vertices,
-          spatialReference: view.spatialReference
-        };
-        
-        return new Graphic({
-          geometry:polygon,
-          symbol:{
-            type:"simple-fill",
-            color:[178,102,234,.25],
-            style:"solid",
-            outline:{
-              color:[178,102,234],
-              width:.5
-            }
-          }
-        });
-      }
+   function createGraphic(vertices) {
+     const polygon = {
+       type: "polygon",
+       rings: vertices,
+       spatialReference: view.spatialReference
+     };
+     
+     return new Graphic({
+       geometry:polygon,
+       symbol:{
+         type:"simple-fill",
+         color:[178,102,234,.25],
+         style:"solid",
+         outline:{
+           color:[178,102,234],
+           width:.5
+         }
+       }
+     });
+   }
         
       
       }
