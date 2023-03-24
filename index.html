@@ -240,8 +240,8 @@
 
 
         });
-      
- var draw = new Draw({
+
+        var draw = new Draw({
     view: view
   });
 
@@ -276,6 +276,7 @@ function drawPolygon(event) {
      }).then(function(results){
        let identificatieValues = [];
        results.features.forEach(function(feature){
+        console.log(identificatieValues)
          identificatieValues.push(feature.attributes.identificatie);
          feature.symbol = {
            type: "simple-marker",
