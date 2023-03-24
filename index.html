@@ -229,31 +229,46 @@
         });
         
         view.ui.add(button, "top-right")
+        
 
 
-        view.on("click", function(event){
-          view.hitTest(event).then(function(response){
-            console.log(event);
-            if (response.results.length) {
-              var graphic = response.results.filter(function (result) {
-                return result.graphic.layer === featureLayer;
-              })[0].graphic;
-              
-              graphic.symbol = {
-                type: "simple-marker",
-                color: [255,255,0],
-                outline: {
-                  width: 3,
-                  color: [255,0,0]
-                }
-              };
-            }
-          });
+
+
         });
 
 
-
-
+        view.on("drag", ["Shift"], function(event){
+          event.stopPropagation();
+          
+          if (event.action === "start") {
+            view.graphics.removeAll();
+            
+            var graphic = draw.create("rectangle", {mode: "click"});
+            view.graphics.add(graphic);
+            
+            graphic.on("draw-complete", function(evt){
+              featureLayer.queryFeatures({
+                geometry: evt.geometry,
+                spatialRelationship: "intersects"
+              }).then(function(results){
+                results.features.forEach(function(feature){
+                  feature.symbol = {
+                    type: "simple-marker",
+                    color: [255,255,0],
+                    outline: {
+                      width: 3,
+                      color: [255,0,0]
+                    }
+                  };
+                });
+              });
+            });
+          }
+          
+          if (event.action === "end") {
+            view.graphics.removeAll();
+          }
+          
         });
       
       }
