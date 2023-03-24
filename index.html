@@ -233,6 +233,7 @@
 
         view.on("click", function(event){
           view.hitTest(event).then(function(response){
+            console.log(event);
             if (response.results.length) {
               var graphic = response.results.filter(function (result) {
                 return result.graphic.layer === featureLayer;
