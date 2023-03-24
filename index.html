@@ -55,7 +55,7 @@
           PolygonDrawAction
           
         ) {
-          console.log("test 8")
+          console.log("test asd")
 
           // Set up the OAuth 2.0 authentication
           var info = new OAuthInfo({
@@ -260,10 +260,11 @@
       if (!action) {
         console.log("Drawing")
         action = draw.create("rectangle");
-        action.on("draw-complete", drawPolygon(event));
+        
       }
       
       if (event.action === "end") {
+        action.on("draw-complete", drawPolygon(event));
         console.log("Action done")
         action.complete();
         action = null;
@@ -273,7 +274,7 @@
     
   function drawPolygon(event) {
           const vertices = event.vertices;
-          //view.graphics.removeAll();
+          view.graphics.removeAll();
           const graphic = createGraphic(vertices);
           view.graphics.add(graphic);
           
