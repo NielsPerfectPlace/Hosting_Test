@@ -37,7 +37,8 @@
           "esri/core/reactiveUtils",
           "esri/layers/support/FeatureFilter",
           "esri/views/draw/Draw",
-          "esri/Graphic"
+          "esri/Graphic",
+          "esri/views/draw/PolygonDrawAction"
 
         ], function (
           esriConfig,
@@ -50,7 +51,8 @@
           reactiveUtils,
           FeatureFilter,
           Draw,
-          Graphic
+          Graphic,
+          PolygonDrawAction
           
         ) {
           console.log("test 8")
@@ -253,7 +255,6 @@
 
     // listen for shift + click event on the view
     view.on("drag", ["Shift"], function(event) {
-      console.log("Clicked");
       //event.stopPropagation();
       
       if (!action) {
@@ -275,7 +276,6 @@
           view.graphics.removeAll();
           const graphic = createGraphic(vertices);
           view.graphics.add(graphic);
-          console.log(graphics);
           
           featureLayer.queryFeatures({
             geometry: graphic.geometry,
