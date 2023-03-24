@@ -231,6 +231,26 @@
         view.ui.add(button, "top-right")
 
 
+        view.on("click", function(event){
+          view.hitTest(event).then(function(response){
+            if (response.results.length) {
+              var graphic = response.results.filter(function (result) {
+                return result.graphic.layer === featureLayer;
+              })[0].graphic;
+              
+              graphic.symbol = {
+                type: "simple-marker",
+                color: [255,255,0],
+                outline: {
+                  width: 3,
+                  color: [255,0,0]
+                }
+              };
+            }
+          });
+        });
+
+
 
 
         });
